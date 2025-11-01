@@ -2,19 +2,15 @@ package ys.member.domain.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
 
 /**
  * 생년월일 Value Object
  */
 @Embeddable
-@Getter
 public class BirthDate {
 
     @Column(name = "birth_date", nullable = false)
@@ -78,5 +74,14 @@ public class BirthDate {
     @Override
     public String toString() {
         return value.toString();
+    }
+
+
+    public String getFormatted() {
+        return value.format(DateTimeFormatter.ofPattern(getPattern()));
+    }
+
+    private static String getPattern() {
+        return "yyyy-MM-dd";
     }
 }

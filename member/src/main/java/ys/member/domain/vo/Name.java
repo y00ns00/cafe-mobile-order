@@ -38,4 +38,12 @@ public class Name {
     public String toString() {
         return getFullName();
     }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
 }
