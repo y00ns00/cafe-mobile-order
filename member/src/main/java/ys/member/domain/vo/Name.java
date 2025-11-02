@@ -3,8 +3,11 @@ package ys.member.domain.vo;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
+import ys.member.exception.MemberValidationException;
+import ys.member.exception.errorcode.MemberValidationErrorCode;
 
 @Embeddable
+@Getter
 public class Name {
 
     @Column(name = "last_name", nullable = false)
@@ -13,14 +16,15 @@ public class Name {
     @Column(name = "first_name", nullable = false)
     private String firstName;  // 이름
 
-    protected Name() {}
+    public Name() {
+    }
 
     private Name(String lastName, String firstName) {
         if (lastName == null || lastName.isBlank()) {
-            throw new IllegalArgumentException("성은 필수입니다.");
+            throw new MemberValidationException(MemberValidationErrorCode.LAST_NAME_REQUIRED);
         }
         if (firstName == null || firstName.isBlank()) {
-            throw new IllegalArgumentException("이름은 필수입니다.");
+            throw new MemberValidationException(MemberValidationErrorCode.FIRST_NAME_REQUIRED);
         }
         this.lastName = lastName.trim();
         this.firstName = firstName.trim();
@@ -30,6 +34,9 @@ public class Name {
         return new Name(lastName, firstName);
     }
 
+    /**
+     * 전체 이름 반환 (성 + 이름)
+     */
     public String getFullName() {
         return lastName + firstName;
     }
@@ -37,13 +44,5 @@ public class Name {
     @Override
     public String toString() {
         return getFullName();
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public String getFirstName() {
-        return firstName;
     }
 }

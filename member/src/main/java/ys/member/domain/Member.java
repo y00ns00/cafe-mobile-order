@@ -3,13 +3,17 @@ package ys.member.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import ys.member.domain.vo.*;
+import ys.member.exception.MemberValidationException;
+import ys.member.exception.MemberDomainException;
+import ys.member.exception.errorcode.MemberValidationErrorCode;
+import ys.member.exception.errorcode.MemberDomainErrorCode;
 
 import java.time.LocalDateTime;
 import java.util.function.Function;
 
 /**
  * 회원 기본 정보
- * 이름, 전화번호, 성별, 생년월일 필수
+ * 이름, 전화번호, 성별, 생년월일을 필수
  */
 @Entity
 @Getter
@@ -61,7 +65,7 @@ public class Member {
     ) {
         Name name = Name.of(lastName, firstName);
         PhoneNumber phoneNumber = PhoneNumber.of(phoneNumberValue);
-        Gender genderEnum = Gender.valueOf(genderValue);
+        Gender genderEnum = parseGender(genderValue);
         BirthDate birthDate = BirthDate.of(birthDateValue);
 
         Member member = new Member();
@@ -79,5 +83,12 @@ public class Member {
         return member;
     }
 
+    private static Gender parseGender(String genderValue) {
+        try {
+            return Gender.valueOf(genderValue);
+        } catch (IllegalArgumentException e) {
+            throw new MemberValidationException(MemberValidationErrorCode.GENDER_INVALID);
+        }
+    }
 
 }

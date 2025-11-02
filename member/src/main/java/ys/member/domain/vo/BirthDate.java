@@ -2,42 +2,46 @@ package ys.member.domain.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import lombok.Getter;
+import ys.member.exception.MemberValidationException;
+import ys.member.exception.errorcode.MemberValidationErrorCode;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.time.format.DateTimeFormatter;
 
 /**
  * 생년월일 Value Object
  */
 @Embeddable
+@Getter
 public class BirthDate {
 
     @Column(name = "birth_date", nullable = false)
     private LocalDate value;
 
-    protected BirthDate() {}
+    protected BirthDate() {
+    }
 
     private BirthDate(LocalDate value) {
         if (value == null) {
-            throw new IllegalArgumentException("생년월일은 필수입니다.");
+            throw new MemberValidationException(MemberValidationErrorCode.BIRTH_DATE_REQUIRED);
         }
         if (isFutureDate(value)) {
-            throw new IllegalArgumentException("생년월일은 현재 날짜보다 이후일 수 없습니다.");
+            throw new MemberValidationException(MemberValidationErrorCode.BIRTH_DATE_FUTURE);
         }
         this.value = value;
     }
 
     private BirthDate(String value) {
         if (isNullOrBlank(value)) {
-            throw new IllegalArgumentException("생년월일은 필수입니다.");
+            throw new MemberValidationException(MemberValidationErrorCode.BIRTH_DATE_REQUIRED);
         }
         if (isInvalidDateFormat(value)) {
-            throw new IllegalArgumentException("생년월일은 yyyy-MM-dd 형식이어야 합니다. (예: 1990-01-01)");
+            throw new MemberValidationException(MemberValidationErrorCode.BIRTH_DATE_INVALID_FORMAT);
         }
         LocalDate localDate = LocalDate.parse(value);
         if (isFutureDate(localDate)) {
-            throw new IllegalArgumentException("생년월일은 현재 날짜보다 이후일 수 없습니다.");
+            throw new MemberValidationException(MemberValidationErrorCode.BIRTH_DATE_FUTURE);
         }
 
         this.value = localDate;
@@ -74,14 +78,5 @@ public class BirthDate {
     @Override
     public String toString() {
         return value.toString();
-    }
-
-
-    public String getFormatted() {
-        return value.format(DateTimeFormatter.ofPattern(getPattern()));
-    }
-
-    private static String getPattern() {
-        return "yyyy-MM-dd";
     }
 }
