@@ -8,6 +8,7 @@ import ys.member.exception.errorcode.MemberValidationErrorCode;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
 
 /**
  * 생년월일 Value Object
@@ -78,5 +79,9 @@ public class BirthDate {
     @Override
     public String toString() {
         return value.toString();
+    }
+
+    public String getFormatted() {
+        return value.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 }

@@ -9,8 +9,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ys.member.exception.ErrorResponse;
-import ys.member.exception.MemberDomainException;
 import ys.member.exception.MemberValidationException;
+import ys.member.exception.MemberDomainException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -163,6 +163,28 @@ public class GlobalExceptionHandler {
             HttpServletRequest request
     ) {
         log.error("[Domain] {} (code: {})", ex.getMessage(), ex.getErrorCode().getCode());
+
+        HttpStatus httpStatus = httpStatusMapper.resolve(ex.getErrorCode());
+
+        ErrorResponse errorResponse = ErrorResponse.of(
+                httpStatus.value(),
+                ex.getErrorCode().getCode(),
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(httpStatus).body(errorResponse);
+    }
+
+    /**
+     * 공통 예외
+     */
+    @ExceptionHandler(CommonException.class)
+    public ResponseEntity<ErrorResponse> handleMemberDomainException(
+            CommonException ex,
+            HttpServletRequest request
+    ) {
+        log.error("[Common] {} (code: {})", ex.getMessage(), ex.getErrorCode().getCode());
 
         HttpStatus httpStatus = httpStatusMapper.resolve(ex.getErrorCode());
 

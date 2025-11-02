@@ -1,7 +1,7 @@
 package ys.member.exception;
 
 import lombok.Getter;
-import ys.member.exception.errorcode.MemberErrorCode;
+import ys.member.common.ErrorCode;
 
 
 /**
@@ -11,19 +11,19 @@ import ys.member.exception.errorcode.MemberErrorCode;
 @Getter
 public abstract class MemberException extends RuntimeException {
 
-    private final MemberErrorCode errorCode;
+    private final ErrorCode errorCode;
 
-    protected MemberException(MemberErrorCode errorCode) {
+    protected MemberException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }
 
-    protected MemberException(MemberErrorCode errorCode, String customMessage) {
+    protected MemberException(ErrorCode errorCode, String customMessage) {
         super(customMessage);
         this.errorCode = errorCode;
     }
 
-    protected MemberException(MemberErrorCode errorCode, Throwable cause) {
+    protected MemberException(ErrorCode errorCode, Throwable cause) {
         super(errorCode.getMessage(), cause);
         this.errorCode = errorCode;
     }

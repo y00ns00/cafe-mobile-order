@@ -2,6 +2,7 @@ package ys.member.exception.errorcode;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import ys.member.common.ErrorCode;
 
 /**
  * Member Validation 에러 코드 (입력값 검증 실패)
@@ -13,11 +14,16 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-public enum MemberValidationErrorCode implements MemberErrorCode {
+public enum MemberValidationErrorCode implements ErrorCode {
 
     // 비밀번호 검증 (MB0300~MB0399)
     PASSWORD_REQUIRED("MB0301", "비밀번호는 필수입니다."),
-    PASSWORD_INVALID("MB0302", "비밀번호가 유효하지 않습니다."),
+    PASSWORD_TOO_SHORT("MB0302", "비밀번호는 최소 8자 이상이어야 합니다."),
+    PASSWORD_TOO_LONG("MB0303", "비밀번호는 최대 20자 이하이어야 합니다."),
+    PASSWORD_MISSING_LETTER("MB0304", "비밀번호는 영문자를 포함해야 합니다."),
+    PASSWORD_MISSING_DIGIT("MB0305", "비밀번호는 숫자를 포함해야 합니다."),
+    PASSWORD_MISSING_SPECIAL_CHAR("MB0306", "비밀번호는 특수문자(!@#$%?)를 포함해야 합니다."),
+    PASSWORD_INVALID_CHAR("MB0307", "비밀번호는 영문자, 숫자, 특수문자(!@#$%?)만 사용할 수 있습니다."),
 
     // 이름 검증 (MB0400~MB0499)
     LAST_NAME_REQUIRED("MB0401", "성은 필수입니다."),

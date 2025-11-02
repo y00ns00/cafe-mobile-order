@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import ys.member.domain.vo.*;
 import ys.member.exception.MemberValidationException;
-import ys.member.exception.MemberDomainException;
 import ys.member.exception.errorcode.MemberValidationErrorCode;
-import ys.member.exception.errorcode.MemberDomainErrorCode;
 
 import java.time.LocalDateTime;
 import java.util.function.Function;
@@ -76,8 +74,7 @@ public class Member {
         member.registrationDateTime = LocalDateTime.now();
         member.status = MemberStatus.ACTIVE;
 
-        Password password = Password.of(rawPassword);
-        password.encode(passwordEncoder);
+        Password password = Password.of(rawPassword, passwordEncoder);
         member.password = password;
 
         return member;

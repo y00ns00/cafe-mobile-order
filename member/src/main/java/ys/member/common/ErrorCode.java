@@ -1,4 +1,4 @@
-package ys.member.exception.errorcode;
+package ys.member.common;
 
 /**
  * Member 도메인 에러 코드 인터페이스
@@ -6,7 +6,7 @@ package ys.member.exception.errorcode;
  *
  * HTTP 상태 코드는 Web 계층(GlobalExceptionHandler)에서 매핑하여 관리
  */
-public interface MemberErrorCode {
+public interface ErrorCode {
 
     /**
      * 에러 코드 (예: MB0001)

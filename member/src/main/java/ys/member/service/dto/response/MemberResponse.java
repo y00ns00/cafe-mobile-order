@@ -13,9 +13,6 @@ import java.time.format.DateTimeFormatter;
 @AllArgsConstructor
 public class MemberResponse {
 
-    @Schema(description = "회원 ID", example = "1")
-    private Long memberId;
-
     @Schema(description = "회원 이름")
     private NameResponse name;
 
@@ -33,7 +30,6 @@ public class MemberResponse {
 
     public static MemberResponse from(Member member) {
         return new MemberResponse(
-            member.getMemberId(),
             NameResponse.from(member.getName()),
             PhoneNumberResponse.from(member.getPhoneNumber()),
             member.getGender().name(),

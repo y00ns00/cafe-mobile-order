@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ys.member.common.CommonErrorCode;
+import ys.member.common.CommonException;
 import ys.member.domain.Member;
 import ys.member.domain.vo.PhoneNumber;
 import ys.member.persistence.MemberRepository;
@@ -22,7 +24,7 @@ public class MemberService {
 
         PhoneNumber phoneNumber = PhoneNumber.of(request.getPhoneNumber());
         if(memberRepository.findOneByPhoneNumber(phoneNumber).isPresent()) {
-            throw new IllegalArgumentException("이미 존재하는 회원입니다");
+            throw new CommonException(CommonErrorCode.ALREADY_EXISTS, "이미 존재하는 회원입니다.");
         }
 
         Member member = Member.register(
@@ -35,9 +37,9 @@ public class MemberService {
                 passwordEncoder::encode
         );
 
-        Member savedMember = memberRepository.save(member);
+        memberRepository.save(member);
 
-        return MemberResponse.from(savedMember);
+        return MemberResponse.from(member);
     }
 
 

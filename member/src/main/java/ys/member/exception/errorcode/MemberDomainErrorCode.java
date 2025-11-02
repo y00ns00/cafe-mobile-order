@@ -2,6 +2,7 @@ package ys.member.exception.errorcode;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import ys.member.common.ErrorCode;
 
 /**
  * Member Domain 에러 코드 (비즈니스 규칙 위반)
@@ -15,13 +16,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Getter
 @RequiredArgsConstructor
-public enum MemberDomainErrorCode implements MemberErrorCode {
-
-    // ===== 회원 중복 (MB0001~MB0099) =====
-    DUPLICATE_MEMBER("MB0001", "이미 존재하는 회원입니다."),
-
-    // ===== 회원 조회 (MB0100~MB0199) =====
-    MEMBER_NOT_FOUND("MB0100", "회원을 찾을 수 없습니다."),
+public enum MemberDomainErrorCode implements ErrorCode {
 
     // ===== 회원 상태 (MB0200~MB0299) =====
     INVALID_MEMBER_STATE("MB0200", "잘못된 회원 상태입니다."),
