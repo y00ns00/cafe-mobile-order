@@ -1,2 +1,3 @@
 rootProject.name = 'cafe-mobile-order'
 include 'member'
+include 'product'
