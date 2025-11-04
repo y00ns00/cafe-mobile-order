@@ -20,7 +20,11 @@ public class Product {
     @Column
     private String description;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "product_images",
+            joinColumns = @JoinColumn(name = "product_id")
+    )
     private List<ImageUrl> images = new ArrayList<>();
 
     @Embedded

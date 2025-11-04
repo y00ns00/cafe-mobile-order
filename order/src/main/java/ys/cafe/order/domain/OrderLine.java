@@ -1,9 +1,6 @@
 package ys.cafe.order.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import ys.cafe.common.vo.Quantity;
 import ys.cafe.common.vo.Won;
 import ys.cafe.order.exception.OrderValidationException;
@@ -16,12 +13,19 @@ public class OrderLine {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderLineId;
 
+    @Column(name = "product_id")
     private Long productId;
 
+    @Column(name = "product_name")
     private String productName;
 
+    @Embedded
     private Quantity quantity;
 
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "amount", column = @Column(name = "price"))
+    })
     private Won price;
 
     protected OrderLine() {

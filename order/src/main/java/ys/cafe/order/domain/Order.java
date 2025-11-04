@@ -12,8 +12,6 @@ import java.util.List;
 @Entity
 public class Order {
 
-
-    // todo id 객체로 분리하기
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderId;
@@ -27,10 +25,16 @@ public class Order {
     private OrderStatus orderStatus;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @JoinColumn(name = "order_id")
     private List<OrderLine> orderLines = Lists.newArrayList();
 
+    @Column(name = "order_date_time")
     private LocalDateTime orderDateTime;
 
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "amount", column = @Column(name = "total_price"))
+    })
     private Won totalPrice;
 
     protected Order() {}

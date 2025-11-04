@@ -2,6 +2,8 @@ package ys.cafe.common.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import ys.cafe.common.exception.MoneyValidationException;
 import ys.cafe.common.exception.errorcode.MoneyValidationErrorCode;
 
@@ -14,6 +16,7 @@ public class Won {
     @Column(name = "price", nullable = false, precision = 19, scale = 0)
     private BigDecimal amount;
 
+    @Enumerated(EnumType.STRING)
     private Currency currency;
 
     protected Won() {
