@@ -4,13 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ys.cafe.member.common.CommonErrorCode;
-import ys.cafe.member.common.CommonException;
+import ys.cafe.common.exception.CommonErrorCode;
+import ys.cafe.common.exception.CommonException;
 import ys.cafe.member.domain.Member;
 import ys.cafe.member.domain.vo.PhoneNumber;
 import ys.cafe.member.persistence.MemberRepository;
 import ys.cafe.member.service.dto.request.MemberSignUpRequest;
 import ys.cafe.member.service.dto.response.MemberResponse;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +42,14 @@ public class MemberService {
         memberRepository.save(member);
 
         return MemberResponse.from(member);
+    }
+
+
+    public MemberResponse getMember(Long memberId) {
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CommonException(CommonErrorCode.NOT_FOUND, "존재하지 않는 회원입니다."));
+
+        return MemberResponse.from(member);
+
     }
 
 

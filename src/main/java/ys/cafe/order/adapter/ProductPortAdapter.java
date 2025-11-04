@@ -2,16 +2,20 @@ package ys.cafe.order.adapter;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import ys.cafe.order.port.ProductPort;
 import ys.cafe.order.service.dto.ProductDTO;
-import ys.cafe.product.domain.Product;
 import ys.cafe.product.service.ProductService;
 import ys.cafe.product.service.dto.ProductResponse;
 
 import java.util.List;
 
+/**
+ * Product 아웃바운드 어댑터
+ * ProductPort를 구현하여 Product 서비스와 통신
+ */
 @Component
 @RequiredArgsConstructor
-public class ProductAdapterImpl implements ProductAdapter {
+public class ProductPortAdapter implements ProductPort {
 
     private final ProductService productService;
 
@@ -32,5 +36,4 @@ public class ProductAdapterImpl implements ProductAdapter {
                 )
                 .toList();
     }
-
 }

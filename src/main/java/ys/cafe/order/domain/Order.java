@@ -11,7 +11,6 @@ import java.util.List;
 
 @Entity
 public class Order {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderId;
@@ -93,5 +92,58 @@ public class Order {
 
     public Won getTotalPrice() {
         return totalPrice;
+    }
+
+    /**
+     * 결제 완료 처리
+     * PAYMENT_WAITING → PREPARING
+     */
+    public void completePayment() {
+        if (this.orderStatus != OrderStatus.PAYMENT_WAITING) {
+            throw new OrderValidationException(
+                    OrderValidationErrorCode.ORDER_STATUS_INVALID,
+                    "결제 대기 상태가 아닙니다. 현재 상태: " + this.orderStatus
+            );
+        }
+        this.orderStatus = OrderStatus.PREPARING;
+    }
+
+    /**
+     * 결제 실패 처리
+     * PAYMENT_WAITING → CANCELED
+     */
+    public void failPayment() {
+        if (this.orderStatus != OrderStatus.PAYMENT_WAITING) {
+            throw new OrderValidationException(
+                    OrderValidationErrorCode.ORDER_STATUS_INVALID,
+                    "결제 대기 상태가 아닙니다. 현재 상태: " + this.orderStatus
+            );
+        }
+        this.orderStatus = OrderStatus.CANCELED;
+    }
+
+    /**
+     * 주문 취소
+     * PAYMENT_WAITING, PREPARING → CANCELED
+     * 회원이 주문을 취소할 수 있음
+     */
+    public void cancel() {
+        // 이미 취소된 경우
+        if (this.orderStatus == OrderStatus.CANCELED) {
+            throw new OrderValidationException(
+                    OrderValidationErrorCode.ORDER_ALREADY_CANCELED,
+                    "이미 취소된 주문입니다."
+            );
+        }
+
+        // 서빙 중이거나 완료된 주문은 취소 불가
+        if (this.orderStatus == OrderStatus.SERVE || this.orderStatus == OrderStatus.COMPLETED) {
+            throw new OrderValidationException(
+                    OrderValidationErrorCode.ORDER_CANNOT_CANCEL,
+                    "취소할 수 없는 주문 상태입니다. 현재 상태: " + this.orderStatus
+            );
+        }
+
+        this.orderStatus = OrderStatus.CANCELED;
     }
 }

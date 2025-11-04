@@ -1,14 +1,14 @@
-package ys.cafe.order.adapter;
+package ys.cafe.order.port;
 
 import ys.cafe.order.service.dto.ProductDTO;
 
 import java.util.List;
 
 /**
- * Product 서비스에 접근하기 위한 어댑터 인터페이스
- * Order 도메인과 외부 Product 서비스 간의 경계를 정의
+ * Product 아웃바운드 포트
+ * Order 도메인에서 Product 서비스에 접근하기 위한 인터페이스
  */
-public interface ProductAdapter {
+public interface ProductPort {
 
     /**
      * 여러 상품 ID로 판매 가능한 상품 목록 조회

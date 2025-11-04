@@ -2,7 +2,7 @@ package ys.cafe.member.exception.errorcode;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import ys.cafe.member.common.ErrorCode;
+import ys.cafe.common.exception.ErrorCode;
 
 /**
  * Member Domain 에러 코드 (비즈니스 규칙 위반)

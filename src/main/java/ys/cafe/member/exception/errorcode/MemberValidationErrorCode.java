@@ -2,7 +2,7 @@ package ys.cafe.member.exception.errorcode;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import ys.cafe.member.common.ErrorCode;
+import ys.cafe.common.exception.ErrorCode;
 
 /**
  * Member Validation 에러 코드 (입력값 검증 실패)

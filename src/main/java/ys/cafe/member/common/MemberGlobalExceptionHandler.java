@@ -8,6 +8,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ys.cafe.common.exception.CommonException;
 import ys.cafe.member.exception.ErrorResponse;
 import ys.cafe.member.exception.MemberValidationException;
 import ys.cafe.member.exception.MemberDomainException;

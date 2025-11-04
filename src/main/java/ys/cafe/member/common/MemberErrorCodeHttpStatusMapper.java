@@ -2,6 +2,8 @@ package ys.cafe.member.common;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import ys.cafe.common.exception.CommonErrorCode;
+import ys.cafe.common.exception.ErrorCode;
 import ys.cafe.member.exception.errorcode.MemberDomainErrorCode;
 
 /**

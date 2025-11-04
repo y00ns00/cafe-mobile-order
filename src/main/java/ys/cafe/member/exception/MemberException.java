@@ -1,7 +1,7 @@
 package ys.cafe.member.exception;
 
 import lombok.Getter;
-import ys.cafe.member.common.ErrorCode;
+import ys.cafe.common.exception.ErrorCode;
 
 
 /**

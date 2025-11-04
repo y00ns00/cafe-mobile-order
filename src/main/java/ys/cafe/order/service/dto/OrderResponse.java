@@ -21,6 +21,7 @@ public class OrderResponse {
     private List<OrderLineResponse> orderLines;
     private LocalDateTime orderDateTime;
     private String totalPrice;
+    private String paymentUrl;
 
     public static OrderResponse from(Order order) {
         return new OrderResponse(
@@ -31,7 +32,22 @@ public class OrderResponse {
                         .map(OrderLineResponse::from)
                         .collect(Collectors.toList()),
                 order.getOrderDateTime(),
-                order.getTotalPrice().getAmount().toString()
+                order.getTotalPrice().getAmount().toString(),
+                null
+        );
+    }
+
+    public static OrderResponse fromWithPaymentUrl(Order order, String paymentUrl) {
+        return new OrderResponse(
+                order.getOrderId(),
+                order.getMemberId(),
+                order.getOrderStatus(),
+                order.getOrderLines().stream()
+                        .map(OrderLineResponse::from)
+                        .collect(Collectors.toList()),
+                order.getOrderDateTime(),
+                order.getTotalPrice().getAmount().toString(),
+                paymentUrl
         );
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ys.cafe.common.exception.CommonException;
 import ys.cafe.product.exception.ErrorResponse;
 import ys.cafe.product.exception.ProductValidationException;
 import ys.cafe.product.exception.ProductDomainException;

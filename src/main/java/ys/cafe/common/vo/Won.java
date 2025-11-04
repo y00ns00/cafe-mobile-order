@@ -102,4 +102,8 @@ public class Won {
     public String toString() {
         return amount + "원";
     }
+
+    public String toPlainString() {
+        return amount.toPlainString();
+    }
 }
