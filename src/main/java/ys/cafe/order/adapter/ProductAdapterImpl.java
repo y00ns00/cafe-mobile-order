@@ -9,10 +9,6 @@ import ys.cafe.product.service.dto.ProductResponse;
 
 import java.util.List;
 
-/**
- * Product Repository에 직접 접근하는 어댑터 구현체
- * Product Entity를 Order에서 필요한 ProductResponse로 변환
- */
 @Component
 @RequiredArgsConstructor
 public class ProductAdapterImpl implements ProductAdapter {

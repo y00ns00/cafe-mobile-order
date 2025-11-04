@@ -20,11 +20,11 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @RestControllerAdvice
-public class GlobalExceptionHandler {
+public class MemberGlobalExceptionHandler {
 
-    private final ErrorCodeHttpStatusMapper httpStatusMapper;
+    private final MemberErrorCodeHttpStatusMapper httpStatusMapper;
 
-    public GlobalExceptionHandler(ErrorCodeHttpStatusMapper httpStatusMapper) {
+    public MemberGlobalExceptionHandler(MemberErrorCodeHttpStatusMapper httpStatusMapper) {
         this.httpStatusMapper = httpStatusMapper;
     }
 

@@ -9,7 +9,7 @@ import ys.cafe.member.exception.errorcode.MemberDomainErrorCode;
  * Domain/Exception 계층의 Web 의존성 제거를 위해 Web 계층에서 매핑 담당
  */
 @Component
-public class ErrorCodeHttpStatusMapper {
+public class MemberErrorCodeHttpStatusMapper {
 
     /**
      * ErrorCode에 따라 적절한 HttpStatus를 매핑

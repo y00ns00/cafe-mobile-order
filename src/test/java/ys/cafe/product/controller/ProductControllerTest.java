@@ -14,8 +14,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ys.cafe.product.common.CommonErrorCode;
 import ys.cafe.product.common.CommonException;
-import ys.cafe.product.common.ErrorCodeHttpStatusMapper;
-import ys.cafe.product.common.GlobalExceptionHandler;
+import ys.cafe.product.common.ProductErrorCodeHttpStatusMapper;
+import ys.cafe.product.common.ProductGlobalExceptionHandler;
 import ys.cafe.product.service.dto.CreateProductRequest;
 import ys.cafe.product.service.dto.ProductResponse;
 import ys.cafe.product.service.dto.UpdateProductRequest;
@@ -46,8 +46,8 @@ public class ProductControllerTest {
 
     @BeforeEach
     public void setUp() {
-        ErrorCodeHttpStatusMapper errorCodeHttpStatusMapper = new ErrorCodeHttpStatusMapper();
-        GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler(errorCodeHttpStatusMapper);
+        ProductErrorCodeHttpStatusMapper errorCodeHttpStatusMapper = new ProductErrorCodeHttpStatusMapper();
+        ProductGlobalExceptionHandler globalExceptionHandler = new ProductGlobalExceptionHandler(errorCodeHttpStatusMapper);
 
         productController = new ProductController(productService);
         objectMapper = new ObjectMapper();

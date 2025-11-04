@@ -15,8 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import ys.cafe.member.common.ErrorCodeHttpStatusMapper;
-import ys.cafe.member.common.GlobalExceptionHandler;
+import ys.cafe.member.common.MemberErrorCodeHttpStatusMapper;
+import ys.cafe.member.common.MemberGlobalExceptionHandler;
 import ys.cafe.member.objectmother.MemberMother;
 import ys.cafe.member.service.MemberService;
 import ys.cafe.member.service.dto.request.MemberSignUpRequest;
@@ -41,8 +41,8 @@ public class MemberControllerTest {
 
     @BeforeEach
     public void setUp() {
-        ErrorCodeHttpStatusMapper errorCodeHttpStatusMapper = new ErrorCodeHttpStatusMapper();
-        GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler(errorCodeHttpStatusMapper);
+        MemberErrorCodeHttpStatusMapper errorCodeHttpStatusMapper = new MemberErrorCodeHttpStatusMapper();
+        MemberGlobalExceptionHandler globalExceptionHandler = new MemberGlobalExceptionHandler(errorCodeHttpStatusMapper);
         memberController = new MemberController(memberService);
         objectMapper = new ObjectMapper();
 

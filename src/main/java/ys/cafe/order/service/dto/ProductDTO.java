@@ -1,6 +1,5 @@
 package ys.cafe.order.service.dto;
 
-import ys.cafe.order.event.payload.ProductQueryPayload;
 
 public record ProductDTO(
         Long productId,
