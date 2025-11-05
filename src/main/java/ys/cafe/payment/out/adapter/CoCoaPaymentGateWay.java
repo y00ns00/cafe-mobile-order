@@ -2,10 +2,9 @@ package ys.cafe.payment.out.adapter;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import ys.cafe.payment.service.dto.PaymentResponse;
+import ys.cafe.payment.service.dto.response.PaymentResponse;
 
 import java.util.Random;
 import java.util.UUID;

@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 import ys.cafe.order.domain.vo.Won;
 import ys.cafe.order.out.port.PaymentPort;
 import ys.cafe.payment.service.PaymentService;
-import ys.cafe.payment.service.dto.PaymentInfoResponse;
-import ys.cafe.payment.service.dto.PaymentResponse;
+import ys.cafe.payment.service.dto.response.PaymentInfoResponse;
+import ys.cafe.payment.service.dto.response.PaymentResponse;
 
 /**
  * Payment 아웃바운드 어댑터

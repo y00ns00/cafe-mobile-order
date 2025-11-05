@@ -1,6 +1,6 @@
 package ys.cafe.payment.out.adapter;
 
-import ys.cafe.payment.service.dto.PaymentResponse;
+import ys.cafe.payment.service.dto.response.PaymentResponse;
 
 import java.util.concurrent.CompletableFuture;
 

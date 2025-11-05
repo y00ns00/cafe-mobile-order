@@ -1,7 +1,7 @@
 package ys.cafe.order.out.port;
 
 import ys.cafe.order.domain.vo.Won;
-import ys.cafe.payment.service.dto.PaymentInfoResponse;
+import ys.cafe.payment.service.dto.response.PaymentInfoResponse;
 
 /**
  * Payment 아웃바운드 포트

@@ -16,9 +16,9 @@ import ys.cafe.payment.domain.vo.PaymentKey;
 import ys.cafe.payment.out.port.MemberPort;
 import ys.cafe.payment.repository.PaymentRepository;
 import ys.cafe.payment.service.dto.MemberDTO;
-import ys.cafe.payment.service.dto.PaymentInfoResponse;
-import ys.cafe.payment.service.dto.PaymentListResponse;
-import ys.cafe.payment.service.dto.PaymentResponse;
+import ys.cafe.payment.service.dto.response.PaymentInfoResponse;
+import ys.cafe.payment.service.dto.response.PaymentListResponse;
+import ys.cafe.payment.service.dto.response.PaymentResponse;
 
 import java.util.List;
 import java.util.Optional;

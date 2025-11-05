@@ -88,4 +88,47 @@ public class Member {
         }
     }
 
+    /**
+     * 회원 탈퇴 요청
+     * 상태를 WITHDRAW_REQUESTED로 변경하고 탈퇴 요청 일시를 기록
+     */
+    public void withdraw() {
+        if (this.status == MemberStatus.WITHDRAW_REQUESTED) {
+            throw new MemberValidationException(MemberValidationErrorCode.MEMBER_ALREADY_WITHDRAWN);
+        }
+        if (this.status == MemberStatus.DELETED) {
+            throw new MemberValidationException(MemberValidationErrorCode.MEMBER_ALREADY_DELETED);
+        }
+
+        this.status = MemberStatus.WITHDRAW_REQUESTED;
+        this.withdrawRequestedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 회원 탈퇴 철회
+     * WITHDRAW_REQUESTED 상태에서만 철회 가능하며, ACTIVE 상태로 복구
+     * DELETED 상태는 철회 불가능
+     */
+    public void cancelWithdraw() {
+        if (this.status == MemberStatus.DELETED) {
+            throw new MemberValidationException(MemberValidationErrorCode.MEMBER_CANNOT_CANCEL_WITHDRAW_DELETED);
+        }
+        if (this.status == MemberStatus.ACTIVE) {
+            throw new MemberValidationException(MemberValidationErrorCode.MEMBER_NOT_WITHDRAWN);
+        }
+
+        this.status = MemberStatus.ACTIVE;
+        this.withdrawRequestedAt = null;
+    }
+
+    /**
+     * 회원이 활성 상태인지 확인
+     */
+    public boolean isActive() {
+        return this.status == MemberStatus.ACTIVE;
+    }
+
+    public void changeStatus(String status) {
+        this.status = MemberStatus.valueOf(status);
+    }
 }

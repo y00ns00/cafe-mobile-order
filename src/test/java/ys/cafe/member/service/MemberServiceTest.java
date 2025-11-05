@@ -13,6 +13,8 @@ import ys.cafe.common.exception.CommonErrorCode;
 import ys.cafe.common.exception.CommonException;
 import ys.cafe.member.domain.Member;
 import ys.cafe.member.domain.vo.PhoneNumber;
+import ys.cafe.member.exception.MemberValidationException;
+import ys.cafe.member.exception.errorcode.MemberValidationErrorCode;
 import ys.cafe.member.persistence.MemberRepository;
 import ys.cafe.member.service.dto.request.MemberSignUpRequest;
 import ys.cafe.member.service.dto.response.MemberResponse;
@@ -21,6 +23,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -241,6 +244,193 @@ class MemberServiceTest {
                     .hasMessage("이미 존재하는 회원입니다.")
                     .extracting("errorCode")
                     .isEqualTo(CommonErrorCode.ALREADY_EXISTS);
+        }
+    }
+
+    @Nested
+    @DisplayName("회원 탈퇴 테스트")
+    class WithdrawTest {
+
+        @Test
+        @DisplayName("정상 회원이 탈퇴를 요청하면 상태가 WITHDRAW_REQUESTED로 변경된다")
+        void withdrawActiveMember() {
+            // given
+            Long memberId = 1L;
+            Member activeMember = Member.register(
+                    "Password123!",
+                    "김",
+                    "철수",
+                    "010-1234-5678",
+                    "MALE",
+                    "1990-01-01",
+                    s -> s + "encoded"
+            );
+
+            when(memberRepository.findById(memberId))
+                    .thenReturn(Optional.of(activeMember));
+            when(memberRepository.save(any(Member.class)))
+                    .thenReturn(activeMember);
+
+            // when
+            MemberResponse response = memberService.withdraw(memberId);
+
+            // then
+            assertThat(response).isNotNull();
+            assertThat(response.status()).isEqualTo("WITHDRAW_REQUESTED");
+            assertThat(activeMember.getWithdrawRequestedAt()).isNotNull();
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 회원 ID로 탈퇴 요청 시 예외가 발생한다")
+        void withdrawNonExistentMember() {
+            // given
+            Long nonExistentMemberId = 999L;
+
+            when(memberRepository.findById(nonExistentMemberId))
+                    .thenReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> memberService.withdraw(nonExistentMemberId))
+                    .isInstanceOf(CommonException.class)
+                    .hasMessage("존재하지 않는 회원입니다.")
+                    .extracting("errorCode")
+                    .isEqualTo(CommonErrorCode.NOT_FOUND);
+        }
+
+        @Test
+        @DisplayName("이미 탈퇴 요청된 회원이 다시 탈퇴를 요청하면 예외가 발생한다")
+        void withdrawAlreadyWithdrawnMember() {
+            // given
+            Long memberId = 1L;
+            Member withdrawnMember = Member.register(
+                    "Password123!",
+                    "김",
+                    "철수",
+                    "010-1234-5678",
+                    "MALE",
+                    "1990-01-01",
+                    s -> s + "encoded"
+            );
+            withdrawnMember.withdraw(); // 이미 탈퇴 요청 상태
+
+            when(memberRepository.findById(memberId))
+                    .thenReturn(Optional.of(withdrawnMember));
+
+            // when & then
+            assertThatThrownBy(() -> memberService.withdraw(memberId))
+                    .isInstanceOf(MemberValidationException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(MemberValidationErrorCode.MEMBER_ALREADY_WITHDRAWN);
+        }
+    }
+
+    @Nested
+    @DisplayName("회원 탈퇴 철회 테스트")
+    class CancelWithdrawTest {
+
+        @Test
+        @DisplayName("탈퇴 요청된 회원이 철회하면 상태가 ACTIVE로 변경된다")
+        void cancelWithdrawSuccessfully() {
+            // given
+            Long memberId = 1L;
+            Member withdrawnMember = Member.register(
+                    "Password123!",
+                    "김",
+                    "철수",
+                    "010-1234-5678",
+                    "MALE",
+                    "1990-01-01",
+                    s -> s + "encoded"
+            );
+            withdrawnMember.withdraw(); // 탈퇴 요청 상태로 변경
+
+            when(memberRepository.findById(memberId))
+                    .thenReturn(Optional.of(withdrawnMember));
+            when(memberRepository.save(any(Member.class)))
+                    .thenReturn(withdrawnMember);
+
+            // when
+            MemberResponse response = memberService.cancelWithdraw(memberId);
+
+            // then
+            assertThat(response).isNotNull();
+            assertThat(response.status()).isEqualTo("ACTIVE");
+            assertThat(withdrawnMember.getWithdrawRequestedAt()).isNull();
+            assertThat(withdrawnMember.isActive()).isTrue();
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 회원 ID로 탈퇴 철회 시 예외가 발생한다")
+        void cancelWithdrawNonExistentMember() {
+            // given
+            Long nonExistentMemberId = 999L;
+
+            when(memberRepository.findById(nonExistentMemberId))
+                    .thenReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> memberService.cancelWithdraw(nonExistentMemberId))
+                    .isInstanceOf(CommonException.class)
+                    .hasMessage("존재하지 않는 회원입니다.")
+                    .extracting("errorCode")
+                    .isEqualTo(CommonErrorCode.NOT_FOUND);
+        }
+
+        @Test
+        @DisplayName("정상 회원(ACTIVE)이 탈퇴 철회를 요청하면 예외가 발생한다")
+        void cancelWithdrawActiveMember() {
+            // given
+            Long memberId = 1L;
+            Member activeMember = Member.register(
+                    "Password123!",
+                    "김",
+                    "철수",
+                    "010-1234-5678",
+                    "MALE",
+                    "1990-01-01",
+                    s -> s + "encoded"
+            );
+
+            when(memberRepository.findById(memberId))
+                    .thenReturn(Optional.of(activeMember));
+
+            // when & then
+            assertThatThrownBy(() -> memberService.cancelWithdraw(memberId))
+                    .isInstanceOf(MemberValidationException.class)
+                    .extracting("errorCode")
+                    .isEqualTo(MemberValidationErrorCode.MEMBER_NOT_WITHDRAWN);
+        }
+
+        @Test
+        @DisplayName("탈퇴 후 철회하면 즉시 서비스 이용이 가능하다")
+        void canUseServiceImmediatelyAfterCancelWithdraw() {
+            // given
+            Long memberId = 1L;
+            Member member = Member.register(
+                    "Password123!",
+                    "김",
+                    "철수",
+                    "010-1234-5678",
+                    "MALE",
+                    "1990-01-01",
+                    s -> s + "encoded"
+            );
+
+            // 탈퇴 요청
+            member.withdraw();
+            assertThat(member.isActive()).isFalse();
+
+            when(memberRepository.findById(memberId))
+                    .thenReturn(Optional.of(member));
+            when(memberRepository.save(any(Member.class)))
+                    .thenReturn(member);
+
+            // when - 탈퇴 철회
+            memberService.cancelWithdraw(memberId);
+
+            // then - 즉시 서비스 이용 가능
+            assertThat(member.isActive()).isTrue();
+            assertThat(member.getStatus().name()).isEqualTo("ACTIVE");
         }
     }
 

@@ -16,9 +16,9 @@ import ys.cafe.common.exception.CommonException;
 import ys.cafe.payment.common.PaymentErrorCodeHttpStatusMapper;
 import ys.cafe.payment.common.PaymentGlobalExceptionHandler;
 import ys.cafe.payment.service.PaymentService;
-import ys.cafe.payment.service.dto.PaymentCancelRequest;
-import ys.cafe.payment.service.dto.PaymentInfoResponse;
-import ys.cafe.payment.service.dto.PaymentListResponse;
+import ys.cafe.payment.service.dto.request.PaymentCancelRequest;
+import ys.cafe.payment.service.dto.response.PaymentInfoResponse;
+import ys.cafe.payment.service.dto.response.PaymentListResponse;
 
 import java.util.List;
 

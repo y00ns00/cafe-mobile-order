@@ -1,4 +1,4 @@
-package ys.cafe.payment.service.dto;
+package ys.cafe.payment.service.dto.response;
 
 public record PaymentUrlResponse(String paymentUrl, String paymentKey) {
 

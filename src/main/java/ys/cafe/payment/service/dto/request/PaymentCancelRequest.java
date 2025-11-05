@@ -1,4 +1,4 @@
-package ys.cafe.payment.service.dto;
+package ys.cafe.payment.service.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

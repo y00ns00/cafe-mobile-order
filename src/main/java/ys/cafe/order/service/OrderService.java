@@ -18,6 +18,10 @@ import ys.cafe.order.service.dto.OrderLineCreateRequest;
 import ys.cafe.order.service.dto.OrderListResponse;
 import ys.cafe.order.service.dto.OrderResponse;
 import ys.cafe.order.service.dto.ProductDTO;
+import ys.cafe.member.service.MemberService;
+import ys.cafe.member.service.dto.response.MemberResponse;
+import ys.cafe.member.exception.MemberValidationException;
+import ys.cafe.member.exception.errorcode.MemberValidationErrorCode;
 
 import java.util.List;
 import java.util.Map;
@@ -32,46 +36,50 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final ProductPort productPort;
     private final PaymentPort paymentPort;
+    private final MemberService memberService;
 
     @Transactional
     public OrderResponse placeOrder(OrderCreateRequest orderCreateRequest) {
-        // 1. 요청된 상품 ID 목록 추출
+        // 1. 회원 상태 검증 (활성 회원만 주문 가능)
+        validateMemberIsActive(orderCreateRequest.memberId());
+
+        // 2. 요청된 상품 ID 목록 추출
         List<Long> requestedProductIds = orderCreateRequest.orderLines().stream()
                 .map(OrderLineCreateRequest::productId)
                 .toList();
 
-        // 2. 사용 가능한 상품 조회 (한 번의 쿼리로 조회)
+        // 3. 사용 가능한 상품 조회 (한 번의 쿼리로 조회)
         List<ProductDTO> availableProducts = productPort.findAvailableProductsByIds(requestedProductIds);
 
-        // 3. 조회된 상품 ID를 Set으로 관리 (빠른 검색을 위해)
+        // 4. 조회된 상품 ID를 Set으로 관리 (빠른 검색을 위해)
         Set<Long> availableProductIds = availableProducts.stream()
                 .map(ProductDTO::productId)
                 .collect(Collectors.toSet());
 
-        // 4. 요청된 상품이 모두 존재하는지 검증 (Fail Fast)
+        // 5. 요청된 상품이 모두 존재하는지 검증 (Fail Fast)
         validateAllProductsExist(requestedProductIds, availableProductIds);
 
-        // 5. 빠른 조회를 위한 상품 맵 생성
+        // 6. 빠른 조회를 위한 상품 맵 생성
         Map<Long, ProductDTO> productMap = availableProducts.stream()
                 .collect(Collectors.toMap(ProductDTO::productId, product -> product));
 
-        // 6. OrderLine 생성 (검증 완료되어 null 체크 불필요)
+        // 7. OrderLine 생성 (검증 완료되어 null 체크 불필요)
         List<OrderLine> orderLines = orderCreateRequest.orderLines().stream()
                 .map(request -> createOrderLine(request, productMap))
                 .toList();
 
-        // 7. Order 생성 및 저장 (ID 생성을 위해 먼저 저장)
+        // 8. Order 생성 및 저장 (ID 생성을 위해 먼저 저장)
         Order order = Order.create(orderCreateRequest.memberId(), orderLines);
         Order savedOrder = orderRepository.save(order);
 
-        // 8. 결제 처리
+        // 9. 결제 처리
         boolean paymentSuccess = paymentPort.processPayment(
                 savedOrder.getOrderId(),
                 savedOrder.getMemberId(),
                 savedOrder.getTotalPrice()
         );
 
-        // 9. 결제 결과에 따른 처리
+        // 10. 결제 결과에 따른 처리
         if (paymentSuccess) {
             savedOrder.completePayment();
         } else {
@@ -79,6 +87,18 @@ public class OrderService {
         }
 
         return OrderResponse.from(savedOrder);
+    }
+
+    /**
+     * 회원이 활성 상태인지 검증
+     * 탈퇴 요청 또는 삭제된 회원은 주문할 수 없습니다.
+     */
+    private void validateMemberIsActive(Long memberId) {
+        MemberResponse member = memberService.getMember(memberId);
+
+        if (!"ACTIVE".equals(member.status())) {
+            throw new MemberValidationException(MemberValidationErrorCode.MEMBER_NOT_ACTIVE);
+        }
     }
 
     /**

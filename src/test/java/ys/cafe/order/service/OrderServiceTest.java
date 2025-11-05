@@ -10,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import ys.cafe.member.service.MemberService;
+import ys.cafe.member.service.dto.response.MemberResponse;
 import ys.cafe.order.domain.Order;
 import ys.cafe.order.domain.OrderLine;
 import ys.cafe.order.domain.OrderStatus;
@@ -20,6 +22,7 @@ import ys.cafe.order.out.port.PaymentPort;
 import ys.cafe.order.out.port.ProductPort;
 import ys.cafe.order.repository.OrderRepository;
 import ys.cafe.order.service.dto.*;
+import ys.cafe.payment.out.port.MemberPort;
 
 import java.util.List;
 import java.util.Map;
@@ -45,6 +48,9 @@ class OrderServiceTest {
     @Mock
     private PaymentPort paymentPort;
 
+    @Mock
+    private MemberService memberService;
+
     @InjectMocks
     private OrderService orderService;
 
@@ -66,6 +72,11 @@ class OrderServiceTest {
                             productById.get(request.productId()).price()
                     );
                 }).toList();
+
+        // Mock 활성 회원
+        MemberResponse activeMember = mock(MemberResponse.class);
+        when(activeMember.status()).thenReturn("ACTIVE");
+        when(memberService.getMember(memberId)).thenReturn(activeMember);
 
         when(productPort.findAvailableProductsByIds(List.of(1L, 2L))).thenReturn(availableProducts);
         when(orderRepository.save(any(Order.class))).thenReturn(OrderMother.orderWithLinesAndId(10L, memberId, orderLines));
@@ -90,6 +101,12 @@ class OrderServiceTest {
     void placeOrder_ProductNotFound() {
         // given
         Long memberId = 1L;
+
+        // Mock 활성 회원
+        MemberResponse activeMember = mock(MemberResponse.class);
+        when(activeMember.status()).thenReturn("ACTIVE");
+        when(memberService.getMember(memberId)).thenReturn(activeMember);
+
         when(productPort.findAvailableProductsByIds(List.of(1L, 2L)))
                 .thenReturn(List.of(ProductDTO.of(1L, "아메리카노", "4500")));
 
@@ -118,6 +135,11 @@ class OrderServiceTest {
         Long orderId = 20L;
         List<ProductDTO> availableProducts = ProductDTOMother.availableProducts();
         OrderCreateRequest orderCreateRequest = OrderCreateRequestMother.requestForMember(memberId);
+
+        // Mock 활성 회원
+        MemberResponse activeMember = mock(MemberResponse.class);
+        when(activeMember.status()).thenReturn("ACTIVE");
+        when(memberService.getMember(memberId)).thenReturn(activeMember);
 
         when(productPort.findAvailableProductsByIds(List.of(1L, 2L))).thenReturn(availableProducts);
 
@@ -274,6 +296,48 @@ class OrderServiceTest {
 
         verify(paymentPort, never()).cancelPayment(anyLong());
         verify(orderRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("탈퇴 요청된 회원은 주문할 수 없다")
+    void placeOrder_WithdrawnMember() {
+        // given
+        Long memberId = 1L;
+        OrderCreateRequest orderCreateRequest = OrderCreateRequestMother.requestForMember(memberId);
+
+        // Mock 탈퇴 요청 회원
+        MemberResponse withdrawnMember = mock(MemberResponse.class);
+        when(withdrawnMember.status()).thenReturn("WITHDRAW_REQUESTED");
+        when(memberService.getMember(memberId)).thenReturn(withdrawnMember);
+
+        // when & then
+        assertThatThrownBy(() -> orderService.placeOrder(orderCreateRequest))
+                .isInstanceOf(ys.cafe.member.exception.MemberValidationException.class);
+
+        verify(productPort, never()).findAvailableProductsByIds(any());
+        verify(orderRepository, never()).save(any());
+        verify(paymentPort, never()).processPayment(anyLong(), anyLong(), any());
+    }
+
+    @Test
+    @DisplayName("삭제된 회원은 주문할 수 없다")
+    void placeOrder_DeletedMember() {
+        // given
+        Long memberId = 1L;
+        OrderCreateRequest orderCreateRequest = OrderCreateRequestMother.requestForMember(memberId);
+
+        // Mock 삭제된 회원
+        MemberResponse deletedMember = mock(MemberResponse.class);
+        when(deletedMember.status()).thenReturn("DELETED");
+        when(memberService.getMember(memberId)).thenReturn(deletedMember);
+
+        // when & then
+        assertThatThrownBy(() -> orderService.placeOrder(orderCreateRequest))
+                .isInstanceOf(ys.cafe.member.exception.MemberValidationException.class);
+
+        verify(productPort, never()).findAvailableProductsByIds(any());
+        verify(orderRepository, never()).save(any());
+        verify(paymentPort, never()).processPayment(anyLong(), anyLong(), any());
     }
 
 }

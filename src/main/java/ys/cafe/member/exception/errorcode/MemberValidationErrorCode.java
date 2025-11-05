@@ -43,7 +43,14 @@ public enum MemberValidationErrorCode implements ErrorCode {
     GENDER_INVALID("MB0701", "성별은 MALE, FEMALE, OTHER 중 하나여야 합니다. "),
 
     // 주소 검증 (MB0800~MB0899)
-    ADDRESS_INVALID("MB0801", "주소가 유효하지 않습니다.");
+    ADDRESS_INVALID("MB0801", "주소가 유효하지 않습니다."),
+
+    // 회원 상태 검증 (MB0900~MB0999)
+    MEMBER_ALREADY_WITHDRAWN("MB0901", "이미 탈퇴 요청된 회원입니다."),
+    MEMBER_ALREADY_DELETED("MB0902", "이미 삭제된 회원입니다."),
+    MEMBER_NOT_ACTIVE("MB0903", "활성 상태의 회원만 이용할 수 있습니다."),
+    MEMBER_CANNOT_CANCEL_WITHDRAW_DELETED("MB0904", "완전 삭제된 회원은 탈퇴 철회가 불가능합니다."),
+    MEMBER_NOT_WITHDRAWN("MB0905", "탈퇴 요청 상태가 아닙니다.");
 
     private final String code;
     private final String message;

@@ -381,7 +381,7 @@ public class ProductControllerTest {
 
             // when & then
             mockMvc.perform(
-                            patch("/products/{productId}/status", productId)
+                            put("/products/{productId}/status", productId)
                                     .param("status", newStatus)
                                     .accept(MediaType.APPLICATION_JSON)
                     )
@@ -403,7 +403,7 @@ public class ProductControllerTest {
 
             // when & then
             mockMvc.perform(
-                            patch("/products/{productId}/status", productId)
+                            put("/products/{productId}/status", productId)
                                     .param("status", newStatus)
                                     .accept(MediaType.APPLICATION_JSON)
                     )

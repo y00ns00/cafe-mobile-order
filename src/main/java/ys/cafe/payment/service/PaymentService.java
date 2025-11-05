@@ -1,11 +1,9 @@
 package ys.cafe.payment.service;
 
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.transaction.annotation.Transactional;
-import ys.cafe.payment.domain.vo.Won;
-import ys.cafe.payment.service.dto.PaymentInfoResponse;
-import ys.cafe.payment.service.dto.PaymentListResponse;
-import ys.cafe.payment.service.dto.PaymentResponse;
+import ys.cafe.payment.service.dto.response.PaymentInfoResponse;
+import ys.cafe.payment.service.dto.response.PaymentListResponse;
+import ys.cafe.payment.service.dto.response.PaymentResponse;
 
 public interface PaymentService {
     PaymentResponse processPayment(

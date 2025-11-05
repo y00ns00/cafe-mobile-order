@@ -69,7 +69,7 @@ public class ProductController {
     }
 
     @Operation(summary = "상품 상태 변경", description = "상품의 판매 상태를 변경합니다.")
-    @PatchMapping(value = "/{productId}/status", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/{productId}/status", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ProductResponse> changeProductStatus(
             @PathVariable Long productId,
             @RequestParam String status

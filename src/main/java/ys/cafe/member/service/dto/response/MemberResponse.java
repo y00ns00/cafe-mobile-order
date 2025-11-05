@@ -24,7 +24,10 @@ public record MemberResponse(
         BirthDateResponse birthDate,
 
         @Schema(description = "등록일시 (ISO-8601 형식)", example = "2025-11-01T12:34:56.789")
-        String registrationDateTime
+        String registrationDateTime,
+
+        @Schema(description = "회원 상태 (ACTIVE, WITHDRAW_REQUESTED, DELETED)", example = "ACTIVE")
+        String status
 ) {
 
     public static MemberResponse from(Member member) {
@@ -34,7 +37,8 @@ public record MemberResponse(
                 PhoneNumberResponse.from(member.getPhoneNumber()),
                 member.getGender().name(),
                 BirthDateResponse.from(member.getBirthDate()),
-                member.getRegistrationDateTime().format(DateTimeFormatter.ISO_DATE_TIME)
+                member.getRegistrationDateTime().format(DateTimeFormatter.ISO_DATE_TIME),
+                member.getStatus().name()
         );
     }
 }
