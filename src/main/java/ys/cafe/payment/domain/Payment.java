@@ -1,7 +1,7 @@
 package ys.cafe.payment.domain;
 
 import jakarta.persistence.*;
-import ys.cafe.common.vo.Won;
+import ys.cafe.payment.domain.vo.Won;
 import ys.cafe.payment.domain.vo.PaymentKey;
 
 import java.time.LocalDateTime;

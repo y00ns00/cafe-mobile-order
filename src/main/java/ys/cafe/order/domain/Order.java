@@ -2,7 +2,7 @@ package ys.cafe.order.domain;
 
 import jakarta.persistence.*;
 import ys.cafe.common.util.DateTimeFormatUtil;
-import ys.cafe.common.vo.Won;
+import ys.cafe.order.domain.vo.Won;
 import ys.cafe.order.exception.OrderValidationException;
 import ys.cafe.order.exception.errorcode.OrderValidationErrorCode;
 
@@ -126,6 +126,34 @@ public class Order {
             );
         }
         this.orderStatus = OrderStatus.PAYMENT_FAILED;
+    }
+
+    /**
+     * 주문 서빙 시작
+     * PREPARING → SERVE
+     */
+    public void startServing() {
+        if (this.orderStatus != OrderStatus.PREPARING) {
+            throw new OrderValidationException(
+                    OrderValidationErrorCode.ORDER_STATUS_INVALID,
+                    "서빙을 시작할 수 없는 상태입니다. 현재 상태: " + this.orderStatus
+            );
+        }
+        this.orderStatus = OrderStatus.SERVE;
+    }
+
+    /**
+     * 주문 완료 처리
+     * SERVE → COMPLETED
+     */
+    public void completeServing() {
+        if (this.orderStatus != OrderStatus.SERVE) {
+            throw new OrderValidationException(
+                    OrderValidationErrorCode.ORDER_STATUS_INVALID,
+                    "주문을 완료할 수 없는 상태입니다. 현재 상태: " + this.orderStatus
+            );
+        }
+        this.orderStatus = OrderStatus.COMPLETED;
     }
 
     /**

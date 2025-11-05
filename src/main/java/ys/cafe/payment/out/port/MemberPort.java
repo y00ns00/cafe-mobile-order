@@ -1,4 +1,4 @@
-package ys.cafe.payment.port;
+package ys.cafe.payment.out.port;
 
 import ys.cafe.payment.service.dto.MemberDTO;
 

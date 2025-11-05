@@ -1,8 +1,8 @@
 package ys.cafe.order.domain;
 
 import jakarta.persistence.*;
-import ys.cafe.common.vo.Quantity;
-import ys.cafe.common.vo.Won;
+import ys.cafe.order.domain.vo.Quantity;
+import ys.cafe.order.domain.vo.Won;
 import ys.cafe.order.exception.OrderValidationException;
 import ys.cafe.order.exception.errorcode.OrderValidationErrorCode;
 

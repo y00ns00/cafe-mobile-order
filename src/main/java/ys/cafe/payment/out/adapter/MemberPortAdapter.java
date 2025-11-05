@@ -1,10 +1,10 @@
-package ys.cafe.payment.adapter;
+package ys.cafe.payment.out.adapter;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ys.cafe.member.service.MemberService;
 import ys.cafe.member.service.dto.response.MemberResponse;
-import ys.cafe.payment.port.MemberPort;
+import ys.cafe.payment.out.port.MemberPort;
 import ys.cafe.payment.service.dto.MemberDTO;
 
 /**

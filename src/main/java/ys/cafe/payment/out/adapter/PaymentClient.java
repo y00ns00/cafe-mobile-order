@@ -1,4 +1,4 @@
-package ys.cafe.payment.adapter;
+package ys.cafe.payment.out.adapter;
 
 import ys.cafe.payment.service.dto.PaymentResponse;
 

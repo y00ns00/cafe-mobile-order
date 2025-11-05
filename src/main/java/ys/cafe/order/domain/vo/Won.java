@@ -1,4 +1,4 @@
-package ys.cafe.common.vo;
+package ys.cafe.order.domain.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -6,6 +6,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import ys.cafe.common.exception.MoneyValidationException;
 import ys.cafe.common.exception.errorcode.MoneyValidationErrorCode;
+
 
 import java.math.BigDecimal;
 import java.util.Objects;

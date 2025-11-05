@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ys.cafe.common.exception.CommonErrorCode;
 import ys.cafe.common.exception.CommonException;
-import ys.cafe.common.vo.Won;
+import ys.cafe.product.domain.vo.Won;
 import ys.cafe.product.domain.*;
 import ys.cafe.product.service.dto.CreateProductRequest;
 import ys.cafe.product.service.dto.ProductResponse;

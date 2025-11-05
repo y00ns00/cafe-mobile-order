@@ -6,15 +6,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ys.cafe.common.exception.CommonErrorCode;
 import ys.cafe.common.exception.CommonException;
-import ys.cafe.common.vo.Won;
-import ys.cafe.payment.adapter.PaymentClient;
+import ys.cafe.payment.domain.vo.Won;
+import ys.cafe.payment.out.adapter.PaymentClient;
 import ys.cafe.payment.domain.PaymentStatus;
 import ys.cafe.payment.domain.vo.PaymentKey;
-import ys.cafe.payment.port.MemberPort;
+import ys.cafe.payment.out.port.MemberPort;
 import ys.cafe.payment.domain.Payment;
 import ys.cafe.payment.repository.PaymentRepository;
 import ys.cafe.payment.service.dto.MemberDTO;
 import ys.cafe.payment.service.dto.PaymentInfoResponse;
+import ys.cafe.payment.service.dto.PaymentListResponse;
 import ys.cafe.payment.service.dto.PaymentResponse;
 
 import java.util.List;
@@ -28,8 +29,8 @@ import static org.springframework.transaction.annotation.Propagation.REQUIRES_NE
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
-    private final MemberPort memberPort;
     private final PaymentRepository paymentRepository;
+    private final MemberPort memberPort;
     private final PaymentClient paymentClient;
 
     @Transactional(propagation = REQUIRES_NEW)
@@ -37,7 +38,7 @@ public class PaymentServiceImpl implements PaymentService {
     public PaymentResponse processPayment(
             Long orderId,
             Long memberId,
-            Won won
+            String won
     ) {
         MemberDTO member = memberPort.getMember(memberId);
 
@@ -45,14 +46,14 @@ public class PaymentServiceImpl implements PaymentService {
                 UUID.randomUUID().toString(),
                 orderId,
                 memberId,
-                won
+                Won.of(won)
         );
 
         PaymentResponse response = paymentClient.pay(
                 member.getName(),
                 member.getBirthDate(),
                 member.getPhoneNumber(),
-                won.toPlainString()
+                won
         );
 
         if(response.isSuccess()) {
@@ -88,10 +89,10 @@ public class PaymentServiceImpl implements PaymentService {
      * @return 결제 정보 목록
      */
     @Override
-    public List<PaymentInfoResponse> getUserPayments(Long memberId) {
+    public PaymentListResponse getUserPayments(Long memberId) {
         List<Payment> payments = paymentRepository.findByMemberId(memberId);
 
-        return payments.stream()
+        List<PaymentInfoResponse> paymentInfoResponses = payments.stream()
                 .map(payment -> PaymentInfoResponse.of(
                         payment.getOrderId(),
                         payment.getMemberId(),
@@ -99,6 +100,8 @@ public class PaymentServiceImpl implements PaymentService {
                         payment.getStatus().name()
                 ))
                 .toList();
+
+        return PaymentListResponse.of(paymentInfoResponses);
     }
 
     /**

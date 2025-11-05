@@ -1,4 +1,4 @@
-package ys.cafe.payment.port;
+package ys.cafe.payment.out.port;
 
 /**
  * Order 아웃바운드 포트

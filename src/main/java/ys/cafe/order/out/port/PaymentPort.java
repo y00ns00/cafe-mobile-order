@@ -1,6 +1,6 @@
-package ys.cafe.order.port;
+package ys.cafe.order.out.port;
 
-import ys.cafe.common.vo.Won;
+import ys.cafe.order.domain.vo.Won;
 import ys.cafe.payment.service.dto.PaymentInfoResponse;
 
 /**

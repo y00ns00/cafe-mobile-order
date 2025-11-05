@@ -1,4 +1,4 @@
-package ys.cafe.payment.adapter;
+package ys.cafe.payment.out.adapter;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ys.cafe.order.domain.Order;
 import ys.cafe.order.domain.OrderStatus;
 import ys.cafe.order.repository.OrderRepository;
-import ys.cafe.payment.port.OrderPort;
+import ys.cafe.payment.out.port.OrderPort;
 
 /**
  * Order 아웃바운드 어댑터

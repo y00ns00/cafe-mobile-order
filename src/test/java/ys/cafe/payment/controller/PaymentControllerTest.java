@@ -18,6 +18,7 @@ import ys.cafe.payment.common.PaymentGlobalExceptionHandler;
 import ys.cafe.payment.service.PaymentService;
 import ys.cafe.payment.service.dto.PaymentCancelRequest;
 import ys.cafe.payment.service.dto.PaymentInfoResponse;
+import ys.cafe.payment.service.dto.PaymentListResponse;
 
 import java.util.List;
 
@@ -51,7 +52,7 @@ class PaymentControllerTest {
 
     @Test
     @DisplayName("결제 정보 조회 성공")
-    void getPaymentInfo_Success() throws Exception {
+    void getPaymentInfo() throws Exception {
         // given
         String paymentKey = "test-payment-key";
         PaymentInfoResponse response = PaymentInfoResponse.of(
@@ -77,7 +78,7 @@ class PaymentControllerTest {
 
     @Test
     @DisplayName("결제 정보 조회 실패 - 결제 정보 없음")
-    void getPaymentInfo_NotFound() throws Exception {
+    void getPaymentInfoWithNotFound() throws Exception {
         // given
         String paymentKey = "invalid-key";
 
@@ -94,7 +95,7 @@ class PaymentControllerTest {
 
     @Test
     @DisplayName("결제 취소 성공")
-    void cancelPayment_Success() throws Exception {
+    void cancelPayment() throws Exception {
         // given
         Long orderId = 1L;
         PaymentCancelRequest request = PaymentCancelRequest.of(orderId);
@@ -122,7 +123,7 @@ class PaymentControllerTest {
 
     @Test
     @DisplayName("결제 취소 실패 - 결제 정보 없음")
-    void cancelPayment_NotFound() throws Exception {
+    void cancelPaymentWithNotFound() throws Exception {
         // given
         Long orderId = 999L;
         PaymentCancelRequest request = PaymentCancelRequest.of(orderId);
@@ -141,7 +142,7 @@ class PaymentControllerTest {
 
     @Test
     @DisplayName("사용자 결제 목록 조회 성공")
-    void getUserPayments_Success() throws Exception {
+    void getUserPayments() throws Exception {
         // given
         Long memberId = 1L;
         List<PaymentInfoResponse> responses = List.of(
@@ -150,41 +151,41 @@ class PaymentControllerTest {
                 PaymentInfoResponse.of(3L, memberId, "3000", "CANCELED")
         );
 
-        given(paymentService.getUserPayments(memberId)).willReturn(responses);
+        given(paymentService.getUserPayments(memberId)).willReturn(PaymentListResponse.of(responses));
 
         // when & then
         mockMvc.perform(get("/payments/members/{memberId}", memberId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(3))
-                .andExpect(jsonPath("$[0].orderId").value(1))
-                .andExpect(jsonPath("$[0].memberId").value(memberId))
-                .andExpect(jsonPath("$[0].amount").value("5000"))
-                .andExpect(jsonPath("$[0].status").value("SUCCESS"))
-                .andExpect(jsonPath("$[1].orderId").value(2))
-                .andExpect(jsonPath("$[1].amount").value("10000"))
-                .andExpect(jsonPath("$[2].orderId").value(3))
-                .andExpect(jsonPath("$[2].status").value("CANCELED"));
+                .andExpect(jsonPath("$.payments").isArray())
+                .andExpect(jsonPath("$.totalCount").value(3))
+                .andExpect(jsonPath("$.payments[0].orderId").value(1))
+                .andExpect(jsonPath("$.payments[0].memberId").value(memberId))
+                .andExpect(jsonPath("$.payments[0].amount").value("5000"))
+                .andExpect(jsonPath("$.payments[0].status").value("SUCCESS"))
+                .andExpect(jsonPath("$.payments[1].orderId").value(2))
+                .andExpect(jsonPath("$.payments[1].amount").value("10000"))
+                .andExpect(jsonPath("$.payments[2].orderId").value(3))
+                .andExpect(jsonPath("$.payments[2].status").value("CANCELED"));
 
         verify(paymentService).getUserPayments(memberId);
     }
 
     @Test
     @DisplayName("사용자 결제 목록 조회 - 결제 내역 없음")
-    void getUserPayments_EmptyList() throws Exception {
+    void getUserPaymentsWithEmptyList() throws Exception {
         // given
         Long memberId = 999L;
         List<PaymentInfoResponse> responses = List.of();
 
-        given(paymentService.getUserPayments(memberId)).willReturn(responses);
+        given(paymentService.getUserPayments(memberId)).willReturn(PaymentListResponse.of(responses));
 
         // when & then
         mockMvc.perform(get("/payments/members/{memberId}", memberId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(0));
+                .andExpect(jsonPath("$.payments").isArray())
+                .andExpect(jsonPath("$.totalCount").value(0));
 
         verify(paymentService).getUserPayments(memberId);
     }

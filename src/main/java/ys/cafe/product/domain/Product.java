@@ -1,7 +1,7 @@
 package ys.cafe.product.domain;
 
 import jakarta.persistence.*;
-import ys.cafe.common.vo.Won;
+import ys.cafe.product.domain.vo.Won;
 
 import java.util.ArrayList;
 import java.util.List;

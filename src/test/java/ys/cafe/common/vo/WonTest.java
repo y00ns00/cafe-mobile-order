@@ -3,6 +3,7 @@ package ys.cafe.common.vo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ys.cafe.common.exception.MoneyValidationException;
+import ys.cafe.payment.domain.vo.Won;
 
 import java.math.BigDecimal;
 

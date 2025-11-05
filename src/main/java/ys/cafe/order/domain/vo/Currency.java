@@ -1,4 +1,4 @@
-package ys.cafe.common.vo;
+package ys.cafe.order.domain.vo;
 
 public enum Currency {
     KRW,

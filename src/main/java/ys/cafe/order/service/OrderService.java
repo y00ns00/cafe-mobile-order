@@ -3,8 +3,8 @@ package ys.cafe.order.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ys.cafe.order.port.PaymentPort;
-import ys.cafe.order.port.ProductPort;
+import ys.cafe.order.out.port.PaymentPort;
+import ys.cafe.order.out.port.ProductPort;
 import ys.cafe.order.domain.Order;
 import ys.cafe.order.domain.OrderLine;
 import ys.cafe.order.exception.OrderValidationException;
@@ -12,6 +12,7 @@ import ys.cafe.order.exception.errorcode.OrderValidationErrorCode;
 import ys.cafe.order.repository.OrderRepository;
 import ys.cafe.order.service.dto.OrderCreateRequest;
 import ys.cafe.order.service.dto.OrderLineCreateRequest;
+import ys.cafe.order.service.dto.OrderListResponse;
 import ys.cafe.order.service.dto.OrderResponse;
 import ys.cafe.order.service.dto.ProductDTO;
 
@@ -115,20 +116,30 @@ public class OrderService {
         return OrderResponse.from(order);
     }
 
-    public List<OrderResponse> getAllOrders() {
+    public OrderListResponse getAllOrders() {
         List<Order> orders = orderRepository.findAll();
-        return orders.stream()
+        List<OrderResponse> orderResponses = orders.stream()
                 .map(OrderResponse::from)
                 .toList();
+        return OrderListResponse.of(orderResponses);
+    }
+
+    /**
+     * 회원별 주문 목록 조회
+     * 특정 회원의 모든 주문 내역을 조회합니다.
+     **/
+    public OrderListResponse getMemberOrders(Long memberId) {
+        List<Order> orders = orderRepository.findByMemberId(memberId);
+        List<OrderResponse> orderResponses = orders.stream()
+                .map(OrderResponse::from)
+                .toList();
+        return OrderListResponse.of(orderResponses);
     }
 
     /**
      * 주문 취소
      * 회원이 주문을 취소하면 결제도 함께 취소됩니다.
-     *
-     * @param orderId 주문 ID
-     * @param memberId 회원 ID (본인 확인용)
-     * @return 취소된 주문 응답
+     * 취소 등록 이후 cronJob으로 최종 결제 취소 처리
      */
     @Transactional
     public OrderResponse cancelOrder(Long orderId, Long memberId) {
@@ -148,4 +159,6 @@ public class OrderService {
 
         return OrderResponse.from(order);
     }
+
+
 }

@@ -2,7 +2,7 @@ package ys.cafe.product.domain;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import ys.cafe.common.vo.Won;
+import ys.cafe.product.domain.vo.Won;
 
 import java.util.Arrays;
 import java.util.List;

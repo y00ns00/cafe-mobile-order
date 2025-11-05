@@ -24,7 +24,6 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,7 +48,7 @@ class ProductServiceTest {
         );
 
         Product savedProduct = ProductMother.createAvailableProduct();
-        given(productRepository.save(any(Product.class))).willReturn(savedProduct);
+        when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
 
         // when
         ProductResponse response = productService.createProduct(request);
@@ -66,7 +65,7 @@ class ProductServiceTest {
         // given
         Long productId = 1L;
         Product product = ProductMother.createAvailableProduct();
-        given(productRepository.findById(productId)).willReturn(Optional.of(product));
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
 
         // when
         ProductResponse response = productService.getProduct(productId);
@@ -82,7 +81,7 @@ class ProductServiceTest {
     void getProduct_NotFound() {
         // given
         Long productId = 999L;
-        given(productRepository.findById(productId)).willReturn(Optional.empty());
+        when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> productService.getProduct(productId))
@@ -99,7 +98,7 @@ class ProductServiceTest {
                 ProductMother.createAvailableProduct("카페라떼", 5000),
                 ProductMother.createAvailableProduct("카푸치노", 5500)
         );
-        given(productRepository.findAll()).willReturn(products);
+        when(productRepository.findAll()).thenReturn(products);
 
         // when
         List<ProductResponse> responses = productService.getAllProducts();
@@ -133,7 +132,7 @@ class ProductServiceTest {
                 ProductMother.createAvailableProduct("카페라떼", 5000),
                 ProductMother.createAvailableProduct("카푸치노", 5500)
         );
-        given(productRepository.findAllByProductIds(productIds)).willReturn(products);
+        when(productRepository.findAllByProductIds(productIds)).thenReturn(products);
 
         // when
         List<ProductResponse> responses = productService.getAvailableProductsByIds(productIds);
@@ -153,7 +152,7 @@ class ProductServiceTest {
                 ProductMother.createSoldOutProduct("카페라떼", 5000),
                 ProductMother.createAvailableProduct("카푸치노", 5500)
         );
-        given(productRepository.findAllByProductIds(productIds)).willReturn(products);
+        when(productRepository.findAllByProductIds(productIds)).thenReturn(products);
 
         // when & then
         assertThatThrownBy(() -> productService.getAvailableProductsByIds(productIds))
@@ -175,7 +174,7 @@ class ProductServiceTest {
         );
 
         Product product = ProductMother.createAvailableProduct();
-        given(productRepository.findById(productId)).willReturn(Optional.of(product));
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
 
         // when
         ProductResponse response = productService.updateProduct(productId, request);
@@ -199,7 +198,7 @@ class ProductServiceTest {
                 new BigDecimal("5000"),
                 "AVAILABLE"
         );
-        given(productRepository.findById(productId)).willReturn(Optional.empty());
+        when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> productService.updateProduct(productId, request))
@@ -212,7 +211,7 @@ class ProductServiceTest {
     void deleteProduct() {
         // given
         Long productId = 1L;
-        given(productRepository.existsById(productId)).willReturn(true);
+        when(productRepository.existsById(productId)).thenReturn(true);
 
         // when
         productService.deleteProduct(productId);
@@ -227,7 +226,7 @@ class ProductServiceTest {
     void deleteProduct_NotFound() {
         // given
         Long productId = 999L;
-        given(productRepository.existsById(productId)).willReturn(false);
+        when(productRepository.existsById(productId)).thenReturn(false);
 
         // when & then
         assertThatThrownBy(() -> productService.deleteProduct(productId))
@@ -243,7 +242,7 @@ class ProductServiceTest {
         Long productId = 1L;
         String newStatus = "SOLD_OUT";
         Product product = ProductMother.createAvailableProduct();
-        given(productRepository.findById(productId)).willReturn(Optional.of(product));
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
 
         // when
         ProductResponse response = productService.changeProductStatus(productId, newStatus);
@@ -260,7 +259,7 @@ class ProductServiceTest {
         // given
         Long productId = 999L;
         String newStatus = "SOLD_OUT";
-        given(productRepository.findById(productId)).willReturn(Optional.empty());
+        when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
         // when & then
         assertThatThrownBy(() -> productService.changeProductStatus(productId, newStatus))
@@ -275,7 +274,7 @@ class ProductServiceTest {
         Long productId = 1L;
         String invalidStatus = "INVALID_STATUS";
         Product product = ProductMother.createAvailableProduct();
-        given(productRepository.findById(productId)).willReturn(Optional.of(product));
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
 
         // when & then
         assertThatThrownBy(() -> productService.changeProductStatus(productId, invalidStatus))
@@ -290,7 +289,7 @@ class ProductServiceTest {
         Long productId = 1L;
         String newStatus = "HIDDEN";
         Product product = ProductMother.createAvailableProduct();
-        given(productRepository.findById(productId)).willReturn(Optional.of(product));
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
 
         // when
         ProductResponse response = productService.changeProductStatus(productId, newStatus);
@@ -307,7 +306,7 @@ class ProductServiceTest {
         Long productId = 1L;
         String newStatus = "DISCONTINUED";
         Product product = ProductMother.createAvailableProduct();
-        given(productRepository.findById(productId)).willReturn(Optional.of(product));
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
 
         // when
         ProductResponse response = productService.changeProductStatus(productId, newStatus);
@@ -327,7 +326,7 @@ class ProductServiceTest {
                 ProductMother.createHiddenProduct("카페라떼", 5000),
                 ProductMother.createDiscontinuedProduct("카푸치노", 5500)
         );
-        given(productRepository.findAllByProductIds(productIds)).willReturn(products);
+        when(productRepository.findAllByProductIds(productIds)).thenReturn(products);
 
         // when & then
         assertThatThrownBy(() -> productService.getAvailableProductsByIds(productIds))

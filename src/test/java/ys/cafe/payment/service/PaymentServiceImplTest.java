@@ -8,15 +8,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ys.cafe.common.exception.CommonException;
-import ys.cafe.common.vo.Won;
-import ys.cafe.payment.adapter.PaymentClient;
+import ys.cafe.payment.domain.vo.Won;
+import ys.cafe.payment.out.adapter.PaymentClient;
 import ys.cafe.payment.domain.Payment;
 import ys.cafe.payment.domain.PaymentStatus;
 import ys.cafe.payment.domain.vo.PaymentKey;
-import ys.cafe.payment.port.MemberPort;
+import ys.cafe.payment.out.port.MemberPort;
 import ys.cafe.payment.repository.PaymentRepository;
 import ys.cafe.payment.service.dto.MemberDTO;
 import ys.cafe.payment.service.dto.PaymentInfoResponse;
+import ys.cafe.payment.service.dto.PaymentListResponse;
 import ys.cafe.payment.service.dto.PaymentResponse;
 
 import java.util.List;
@@ -45,7 +46,7 @@ class PaymentServiceImplTest {
 
     private Long orderId;
     private Long memberId;
-    private Won amount;
+    private String amount;
     private MemberDTO memberDTO;
     private Payment payment;
 
@@ -53,7 +54,7 @@ class PaymentServiceImplTest {
     void setUp() {
         orderId = 1L;
         memberId = 1L;
-        amount = Won.of(5000);
+        amount = "5000";
 
         memberDTO = MemberDTO.of(
                 "홍길동",
@@ -271,16 +272,17 @@ class PaymentServiceImplTest {
                 .willReturn(List.of(payment1, payment2, payment3));
 
         // when
-        List<PaymentInfoResponse> results = paymentService.getUserPayments(memberId);
+        PaymentListResponse result = paymentService.getUserPayments(memberId);
 
         // then
-        assertThat(results).hasSize(3);
-        assertThat(results.get(0).getOrderId()).isEqualTo(1L);
-        assertThat(results.get(0).getMemberId()).isEqualTo(memberId);
-        assertThat(results.get(0).getAmount()).isEqualTo("5000");
-        assertThat(results.get(0).getStatus()).isEqualTo("SUCCESS");
-        assertThat(results.get(1).getAmount()).isEqualTo("10000");
-        assertThat(results.get(2).getStatus()).isEqualTo("CANCELED");
+        assertThat(result.getPayments()).hasSize(3);
+        assertThat(result.getTotalCount()).isEqualTo(3);
+        assertThat(result.getPayments().get(0).getOrderId()).isEqualTo(1L);
+        assertThat(result.getPayments().get(0).getMemberId()).isEqualTo(memberId);
+        assertThat(result.getPayments().get(0).getAmount()).isEqualTo("5000");
+        assertThat(result.getPayments().get(0).getStatus()).isEqualTo("SUCCESS");
+        assertThat(result.getPayments().get(1).getAmount()).isEqualTo("10000");
+        assertThat(result.getPayments().get(2).getStatus()).isEqualTo("CANCELED");
 
         verify(paymentRepository).findByMemberId(memberId);
     }
@@ -292,10 +294,11 @@ class PaymentServiceImplTest {
         given(paymentRepository.findByMemberId(memberId)).willReturn(List.of());
 
         // when
-        List<PaymentInfoResponse> results = paymentService.getUserPayments(memberId);
+        PaymentListResponse result = paymentService.getUserPayments(memberId);
 
         // then
-        assertThat(results).isEmpty();
+        assertThat(result.getPayments()).isEmpty();
+        assertThat(result.getTotalCount()).isEqualTo(0);
 
         verify(paymentRepository).findByMemberId(memberId);
     }

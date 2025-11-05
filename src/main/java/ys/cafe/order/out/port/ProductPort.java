@@ -1,4 +1,4 @@
-package ys.cafe.order.port;
+package ys.cafe.order.out.port;
 
 import ys.cafe.order.service.dto.ProductDTO;
 

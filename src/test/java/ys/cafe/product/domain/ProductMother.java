@@ -2,7 +2,7 @@ package ys.cafe.product.domain;
 
 import java.util.List;
 
-import ys.cafe.common.vo.Won;
+import ys.cafe.product.domain.vo.Won;
 
 /**
  * ObjectMother 패턴을 사용한 Product 테스트 객체 생성 유틸리티

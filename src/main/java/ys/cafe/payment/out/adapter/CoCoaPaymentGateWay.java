@@ -1,11 +1,10 @@
-package ys.cafe.payment.adapter;
+package ys.cafe.payment.out.adapter;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import ys.cafe.payment.repository.PaymentRepository;
 import ys.cafe.payment.service.dto.PaymentResponse;
 
 import java.util.Random;
@@ -17,16 +16,10 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class CoCoaPaymentGateWay implements PaymentClient {
 
-    // 외부 gateway
     private static final Random random = new Random();
     private static final int MIN_DELAY_MS = 100;
     private static final int MAX_DELAY_MS = 3000;
     private static final double FAILURE_RATE = 0.3; // 30% 실패 확률
-
-    private final PaymentRepository paymentRepository;
-
-    @Value("${server.port:8080}")
-    private String serverPort;
 
     @Override
     public PaymentResponse pay(
@@ -46,7 +39,6 @@ public class CoCoaPaymentGateWay implements PaymentClient {
             return PaymentResponse.failure("외부 결제 게이트웨이 처리 실패");
         }
 
-        // 결제 키 생성
         return PaymentResponse.success(paymentKey);
     }
 

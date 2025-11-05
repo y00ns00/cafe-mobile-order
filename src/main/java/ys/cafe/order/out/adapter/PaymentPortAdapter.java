@@ -1,10 +1,10 @@
-package ys.cafe.order.adapter;
+package ys.cafe.order.out.adapter;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ys.cafe.common.vo.Won;
-import ys.cafe.order.port.PaymentPort;
+import ys.cafe.order.domain.vo.Won;
+import ys.cafe.order.out.port.PaymentPort;
 import ys.cafe.payment.service.PaymentService;
 import ys.cafe.payment.service.dto.PaymentInfoResponse;
 import ys.cafe.payment.service.dto.PaymentResponse;
@@ -22,7 +22,7 @@ public class PaymentPortAdapter implements PaymentPort {
 
     @Override
     public boolean processPayment(Long orderId, Long memberId, Won amount) {
-        PaymentResponse paymentResponse = paymentService.processPayment(orderId, memberId, amount);
+        PaymentResponse paymentResponse = paymentService.processPayment(orderId, memberId, amount.toPlainString());
         return paymentResponse.isSuccess();
     }
 
