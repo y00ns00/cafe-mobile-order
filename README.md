@@ -5,6 +5,13 @@
 카페 모바일 주문 시스템은 회원이 카페 상품을 모바일로 주문하고 결제할 수 있는 백엔드 서비스입니다.
 Spring Boot 기반으로 구축되었으며, 회원 관리와 주문 관리 기능을 제공합니다.
 
+## 파일 위치
+API 문서 : API_DOCUMENTATION.md
+
+jar 파일 : cafe-mobile-order-1.0.0.jar
+
+db스키마 : src/main/resources/schema.sql
+
 ## 기술 스택
 
 ### Backend
