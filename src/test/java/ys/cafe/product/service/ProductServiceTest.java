@@ -11,7 +11,7 @@ import ys.cafe.product.domain.ProductMother;
 import ys.cafe.product.service.dto.CreateProductRequest;
 import ys.cafe.product.service.dto.ProductResponse;
 import ys.cafe.product.service.dto.UpdateProductRequest;
-import ys.cafe.product.common.CommonException;
+import ys.cafe.common.exception.CommonException;
 import ys.cafe.product.exception.ProductDomainException;
 import ys.cafe.product.exception.ProductValidationException;
 import ys.cafe.product.repository.ProductRepository;
@@ -183,7 +183,7 @@ class ProductServiceTest {
         // then
         assertThat(response).isNotNull();
         assertThat(response.name()).isEqualTo("카페라떼");
-        assertThat(response.price()).isEqualTo("5000원");
+        assertThat(response.price()).isEqualTo("5000");
         verify(productRepository, times(1)).findById(productId);
     }
 

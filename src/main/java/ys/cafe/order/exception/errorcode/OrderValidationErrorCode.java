@@ -24,6 +24,8 @@ public enum OrderValidationErrorCode implements ErrorCode {
     ORDER_STATUS_INVALID("OR0305", "주문 상태가 유효하지 않습니다."),
     ORDER_CANNOT_CANCEL("OR0306", "취소할 수 없는 주문 상태입니다."),
     ORDER_ALREADY_CANCELED("OR0307", "이미 취소된 주문입니다."),
+    ORDER_PAYMENT_FAILED("OR0308", "결제 처리에 실패했습니다."),
+    ORDER_PAYMENT_CANCEL_FAILED("OR0309", "결제 취소에 실패했습니다."),
 
     // 주문 항목 검증 (OR0400~OR0499)
     ORDER_LINE_PRODUCT_ID_REQUIRED("OR0401", "상품 ID는 필수입니다."),

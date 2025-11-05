@@ -3,7 +3,10 @@ package ys.cafe.payment.service;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.annotation.Transactional;
 import ys.cafe.common.vo.Won;
+import ys.cafe.payment.service.dto.PaymentInfoResponse;
 import ys.cafe.payment.service.dto.PaymentResponse;
+
+import java.util.List;
 
 public interface PaymentService {
     PaymentResponse processPayment(
@@ -12,12 +15,11 @@ public interface PaymentService {
             Won won
     );
 
-    /**
-     * 결제 취소
-     * @param orderId 주문 ID
-     * @return 결제 취소 성공 여부
-     */
-    boolean cancelPayment(Long orderId);
+    PaymentInfoResponse getPaymentInfo(String paymentKey);
+
+    List<PaymentInfoResponse> getUserPayments(Long memberId);
+
+    PaymentInfoResponse cancelPayment(Long orderId);
 
     @Async("asyncExecutor")
     void processSingleCanceledPaymentAsync(String paymentKey);

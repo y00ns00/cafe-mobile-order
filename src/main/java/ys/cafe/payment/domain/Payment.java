@@ -1,6 +1,9 @@
 package ys.cafe.payment.domain;
 
 import jakarta.persistence.*;
+import ys.cafe.common.vo.Won;
+import ys.cafe.payment.domain.vo.PaymentKey;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -9,7 +12,7 @@ public class Payment {
 
     @Id
     @Column(name = "payment_key", length = 100)
-    private String paymentKey;
+    private PaymentKey paymentKey;
 
     @Column(name = "order_id", nullable = false)
     private Long orderId;
@@ -17,17 +20,8 @@ public class Payment {
     @Column(name = "member_id", nullable = false)
     private Long memberId;
 
-    @Column(name = "name", nullable = false, length = 100)
-    private String name;
-
-    @Column(name = "birth_date", length = 20)
-    private String birthDate;
-
-    @Column(name = "phone", length = 20)
-    private String phone;
-
-    @Column(name = "amount", nullable = false, length = 50)
-    private String amount;
+    @Embedded
+    private Won amount;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
@@ -48,18 +42,12 @@ public class Payment {
             String paymentKey,
             Long orderId,
             Long memberId,
-            String name,
-            String birthDate,
-            String phone,
-            String amount
+            Won amount
     ) {
         Payment payment = new Payment();
-        payment.paymentKey = paymentKey;
+        payment.paymentKey = PaymentKey.of(paymentKey);
         payment.orderId = orderId;
         payment.memberId = memberId;
-        payment.name = name;
-        payment.birthDate = birthDate;
-        payment.phone = phone;
         payment.amount = amount;
         payment.status = PaymentStatus.PENDING;
         payment.createdAt = LocalDateTime.now();
@@ -88,7 +76,7 @@ public class Payment {
 
     // Getters
     public String getPaymentKey() {
-        return paymentKey;
+        return paymentKey.getValue();
     }
 
     public Long getOrderId() {
@@ -99,19 +87,7 @@ public class Payment {
         return memberId;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getBirthDate() {
-        return birthDate;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public String getAmount() {
+    public Won getAmount() {
         return amount;
     }
 

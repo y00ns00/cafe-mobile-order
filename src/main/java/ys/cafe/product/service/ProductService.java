@@ -115,7 +115,7 @@ public class ProductService {
                 product.getImages().stream()
                         .map(imageUrl -> imageUrl.getUrl())
                         .collect(Collectors.toList()),
-                product.getPrice().toString(),
+                product.getPrice().toPlainString(),
                 product.getStatus().name()
         );
     }

@@ -7,7 +7,11 @@
       "Bash(/Users/iyunsu/IdeaProjects/cafe-mobile-order/src/main/java/ys/cafe/order/event/ProductQueryRequest.java )",
       "Bash(/Users/iyunsu/IdeaProjects/cafe-mobile-order/src/main/java/ys/cafe/order/event/ProductQueryResponse.java )",
       "Bash(/Users/iyunsu/IdeaProjects/cafe-mobile-order/src/main/java/ys/cafe/order/event/EventPublisherHelper.java)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(./gradlew test:*)",
+      "Bash(cat:*)",
+      "Bash(./gradlew compileJava:*)",
+      "Bash(./gradlew build:*)"
     ],
     "deny": [],
     "ask": []

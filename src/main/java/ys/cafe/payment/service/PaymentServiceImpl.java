@@ -2,7 +2,6 @@ package ys.cafe.payment.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ys.cafe.common.exception.CommonErrorCode;
@@ -10,14 +9,15 @@ import ys.cafe.common.exception.CommonException;
 import ys.cafe.common.vo.Won;
 import ys.cafe.payment.adapter.PaymentClient;
 import ys.cafe.payment.domain.PaymentStatus;
+import ys.cafe.payment.domain.vo.PaymentKey;
 import ys.cafe.payment.port.MemberPort;
-import ys.cafe.payment.port.OrderPort;
 import ys.cafe.payment.domain.Payment;
 import ys.cafe.payment.repository.PaymentRepository;
 import ys.cafe.payment.service.dto.MemberDTO;
-import ys.cafe.payment.service.dto.PaymentInfoDTO;
+import ys.cafe.payment.service.dto.PaymentInfoResponse;
 import ys.cafe.payment.service.dto.PaymentResponse;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -45,16 +45,13 @@ public class PaymentServiceImpl implements PaymentService {
                 UUID.randomUUID().toString(),
                 orderId,
                 memberId,
-                member.getName(),
-                member.getBirthDate(),
-                member.getPhoneNumber(),
-                won.toPlainString()
+                won
         );
 
         PaymentResponse response = paymentClient.pay(
-                payment.getName(),
-                payment.getBirthDate(),
-                payment.getPhone(),
+                member.getName(),
+                member.getBirthDate(),
+                member.getPhoneNumber(),
                 won.toPlainString()
         );
 
@@ -73,38 +70,57 @@ public class PaymentServiceImpl implements PaymentService {
      * 결제 정보 조회
      * Controller에서 결제 페이지 표시 시 사용
      */
-    public PaymentInfoDTO getPaymentInfo(String paymentKey) {
-        Payment payment = paymentRepository.findByPaymentKey(paymentKey)
+    public PaymentInfoResponse getPaymentInfo(String paymentKey) {
+        Payment payment = paymentRepository.findByPaymentKey(PaymentKey.of(paymentKey))
                 .orElseThrow(() -> new CommonException(CommonErrorCode.NOT_FOUND, "결제 정보를 찾을 수 없습니다: " + paymentKey));
 
-        return PaymentInfoDTO.of(
+        return PaymentInfoResponse.of(
                 payment.getOrderId(),
-                payment.getName(),
-                payment.getAmount()
+                payment.getMemberId(),
+                payment.getAmount().toPlainString(),
+                payment.getStatus().name()
         );
     }
 
     /**
+     * 사용자의 결제 목록 조회
+     * @param memberId 회원 ID
+     * @return 결제 정보 목록
+     */
+    @Override
+    public List<PaymentInfoResponse> getUserPayments(Long memberId) {
+        List<Payment> payments = paymentRepository.findByMemberId(memberId);
+
+        return payments.stream()
+                .map(payment -> PaymentInfoResponse.of(
+                        payment.getOrderId(),
+                        payment.getMemberId(),
+                        payment.getAmount().toPlainString(),
+                        payment.getStatus().name()
+                ))
+                .toList();
+    }
+
+    /**
      * 결제 취소
-     * @param orderId 주문 ID
-     * @return 결제 취소 성공 여부
      */
     @Transactional
     @Override
-    public boolean cancelPayment(Long orderId) {
-        try {
-            Payment payment = paymentRepository.findByOrderId(orderId)
-                    .orElseThrow(() -> new CommonException(CommonErrorCode.NOT_FOUND, "결제 정보를 찾을 수 없습니다. orderId: " + orderId));
+    public PaymentInfoResponse cancelPayment(Long orderId) {
 
-            payment.markAsCanceled();
-            paymentRepository.save(payment);
+        Payment payment = paymentRepository.findByOrderId(orderId)
+                .orElseThrow(() -> new CommonException(CommonErrorCode.NOT_FOUND, "결제 정보를 찾을 수 없습니다. orderId: " + orderId));
 
-            log.info("결제 취소 완료 - orderId: {}, paymentKey: {}", orderId, payment.getPaymentKey());
-            return true;
-        } catch (Exception e) {
-            log.error("결제 취소 실패 - orderId: {}, error: {}", orderId, e.getMessage(), e);
-            return false;
-        }
+        payment.markAsCanceled();
+        paymentRepository.save(payment);
+
+        log.info("결제 취소 등록 완료 - orderId: {}, paymentKey: {}", orderId, payment.getPaymentKey());
+        return PaymentInfoResponse.of(
+                payment.getOrderId(),
+                payment.getMemberId(),
+                payment.getAmount().toPlainString(),
+                payment.getStatus().name()
+        );
     }
 
 
@@ -116,11 +132,11 @@ public class PaymentServiceImpl implements PaymentService {
      * @param paymentKey 결제 키
      */
     @Override
+    @Transactional(propagation = REQUIRES_NEW)
     public void processSingleCanceledPaymentAsync(String paymentKey) {
         try {
-            Payment payment = paymentRepository.findByPaymentKey(paymentKey)
-                    .orElseThrow(() -> new CommonException(CommonErrorCode.NOT_FOUND,
-                            "결제 정보를 찾을 수 없습니다. paymentKey: " + paymentKey));
+            Payment payment = paymentRepository.findByPaymentKey(PaymentKey.of(paymentKey))
+                    .orElseThrow(() -> new CommonException(CommonErrorCode.NOT_FOUND, "결제 정보를 찾을 수 없습니다. paymentKey: " + paymentKey));
 
             // CANCELED 상태가 아니면 처리하지 않음
             if (payment.getStatus() != PaymentStatus.CANCELED) {

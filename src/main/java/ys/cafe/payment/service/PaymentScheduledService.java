@@ -23,22 +23,22 @@ public class PaymentScheduledService {
      * CANCELED 상태의 결제들을 외부 결제 시스템에 취소 요청
      * 매 5분마다 실행
      */
-    @Scheduled(cron = "0 */5 * * * *")
+    @Scheduled(cron = "0 */1 * * * *")
     public void processCanceledPayments() {
         log.info("CANCELED 상태 결제 처리 시작");
 
-        List<Payment> canceledPayments = paymentRepository.findByStatus(PaymentStatus.CANCELED);
+        List<String> canceledPaymentKeys = paymentRepository.findPaymentKeyByStatus(PaymentStatus.CANCELED);
 
-        if (canceledPayments.isEmpty()) {
+        if (canceledPaymentKeys.isEmpty()) {
             log.info("처리할 CANCELED 상태 결제 없음");
             return;
         }
 
-        log.info("CANCELED 상태 결제 {}건 발견 - 비동기 처리 시작", canceledPayments.size());
+        log.info("CANCELED 상태 결제 {}건 발견 - 비동기 처리 시작", canceledPaymentKeys.size());
 
         // 각 결제를 비동기로 처리 (paymentKey만 전달하여 영속성 컨텍스트 문제 회피)
-        for (Payment payment : canceledPayments) {
-            paymentService.processSingleCanceledPaymentAsync(payment.getPaymentKey());
+        for (String paymentKey : canceledPaymentKeys) {
+            paymentService.processSingleCanceledPaymentAsync(paymentKey);
         }
     }
 }

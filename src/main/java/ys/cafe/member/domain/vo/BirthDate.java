@@ -3,12 +3,12 @@ package ys.cafe.member.domain.vo;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
+import ys.cafe.common.util.DateTimeFormatUtil;
 import ys.cafe.member.exception.MemberValidationException;
 import ys.cafe.member.exception.errorcode.MemberValidationErrorCode;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.time.format.DateTimeFormatter;
 
 /**
  * 생년월일 Value Object
@@ -40,7 +40,14 @@ public class BirthDate {
         if (isInvalidDateFormat(value)) {
             throw new MemberValidationException(MemberValidationErrorCode.BIRTH_DATE_INVALID_FORMAT);
         }
-        LocalDate localDate = LocalDate.parse(value);
+
+        LocalDate localDate;
+        try {
+            localDate = LocalDate.parse(value);
+        } catch (java.time.format.DateTimeParseException e) {
+            throw new MemberValidationException(MemberValidationErrorCode.BIRTH_DATE_INVALID_FORMAT);
+        }
+
         if (isFutureDate(localDate)) {
             throw new MemberValidationException(MemberValidationErrorCode.BIRTH_DATE_FUTURE);
         }
@@ -69,7 +76,11 @@ public class BirthDate {
     }
 
     public static BirthDate of(int year, int month, int dayOfMonth) {
-        return new BirthDate(LocalDate.of(year, month, dayOfMonth));
+        try {
+            return new BirthDate(LocalDate.of(year, month, dayOfMonth));
+        } catch (java.time.DateTimeException e) {
+            throw new MemberValidationException(MemberValidationErrorCode.BIRTH_DATE_INVALID_FORMAT);
+        }
     }
 
     public int getAge() {
@@ -82,6 +93,6 @@ public class BirthDate {
     }
 
     public String getFormatted() {
-        return value.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        return DateTimeFormatUtil.formatDate(value);
     }
 }

@@ -17,6 +17,7 @@ import ys.cafe.order.service.dto.ProductDTO;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,58 +31,79 @@ public class OrderService {
 
     @Transactional
     public OrderResponse placeOrder(OrderCreateRequest orderCreateRequest) {
-        // 1. orderLines에서 productId 목록 추출
-        List<Long> productIds = orderCreateRequest.getOrderLines().stream()
+        // 1. 요청된 상품 ID 목록 추출
+        List<Long> requestedProductIds = orderCreateRequest.getOrderLines().stream()
                 .map(OrderLineCreateRequest::getProductId)
                 .toList();
 
-        // 2-4. ProductResponse로 변환
-        List<ProductDTO> products = productPort.findAvailableProductsByIds(productIds);
+        // 2. 사용 가능한 상품 조회 (한 번의 쿼리로 조회)
+        List<ProductDTO> availableProducts = productPort.findAvailableProductsByIds(requestedProductIds);
 
-        // 3. productId별로 ProductResponse 매핑
-        Map<Long, ProductDTO> productMap = products.stream()
-                .collect(Collectors.toMap(ProductDTO::productId, p -> p));
+        // 3. 조회된 상품 ID를 Set으로 관리 (빠른 검색을 위해)
+        Set<Long> availableProductIds = availableProducts.stream()
+                .map(ProductDTO::productId)
+                .collect(Collectors.toSet());
 
-        // 4. OrderLine 생성
+        // 4. 요청된 상품이 모두 존재하는지 검증 (Fail Fast)
+        validateAllProductsExist(requestedProductIds, availableProductIds);
+
+        // 5. 빠른 조회를 위한 상품 맵 생성
+        Map<Long, ProductDTO> productMap = availableProducts.stream()
+                .collect(Collectors.toMap(ProductDTO::productId, product -> product));
+
+        // 6. OrderLine 생성 (검증 완료되어 null 체크 불필요)
         List<OrderLine> orderLines = orderCreateRequest.getOrderLines().stream()
-                .map(orderLineCreateRequest -> {
-                    ProductDTO product = productMap.get(orderLineCreateRequest.getProductId());
-                    if (product == null) {
-                        throw new OrderValidationException(
-                                OrderValidationErrorCode.ORDER_LINE_PRODUCT_NOT_FOUND,
-                                "상품을 찾을 수 없습니다. ID: " + orderLineCreateRequest.getProductId()
-                        );
-                    }
-                    return OrderLine.create(
-                            product.productId(),
-                            product.name(),
-                            orderLineCreateRequest.getQuantity(),
-                            product.price()
-                    );
-                })
+                .map(request -> createOrderLine(request, productMap))
                 .toList();
 
-        // 5. Order 생성 및 저장
-        Order order = Order.create(
-                orderCreateRequest.getMemberId(),
-                orderLines
-        );
+        // 7. Order 생성 및 저장 (ID 생성을 위해 먼저 저장)
+        Order order = Order.create(orderCreateRequest.getMemberId(), orderLines);
         Order savedOrder = orderRepository.save(order);
 
-        // 6. 결제 처리
-        boolean paymentResult = paymentPort.processPayment(
+        // 8. 결제 처리
+        boolean paymentSuccess = paymentPort.processPayment(
                 savedOrder.getOrderId(),
                 savedOrder.getMemberId(),
                 savedOrder.getTotalPrice()
         );
 
-        if (paymentResult) {
+        // 9. 결제 결과에 따른 처리
+        if (paymentSuccess) {
             savedOrder.completePayment();
         } else {
             savedOrder.failPayment();
         }
 
         return OrderResponse.from(savedOrder);
+    }
+
+    /**
+     * 요청된 모든 상품이 존재하는지 검증
+     */
+    private void validateAllProductsExist(List<Long> requestedProductIds, Set<Long> availableProductIds) {
+        List<Long> notFoundProductIds = requestedProductIds.stream()
+                .filter(productId -> !availableProductIds.contains(productId))
+                .toList();
+
+        if (!notFoundProductIds.isEmpty()) {
+            throw new OrderValidationException(
+                    OrderValidationErrorCode.ORDER_LINE_PRODUCT_NOT_FOUND,
+                    "상품을 찾을 수 없습니다. ID: " + notFoundProductIds
+            );
+        }
+    }
+
+    /**
+     * OrderLine 생성
+     */
+    private OrderLine createOrderLine(OrderLineCreateRequest request, Map<Long, ProductDTO> productMap) {
+        ProductDTO product = productMap.get(request.getProductId());
+        return OrderLine.create(
+                product.productId(),
+                product.name(),
+                request.getQuantity(),
+                product.price()
+        );
     }
 
     public OrderResponse getOrder(Long orderId) {
@@ -118,19 +140,10 @@ public class OrderService {
             throw new OrderValidationException(OrderValidationErrorCode.ORDER_STATUS_INVALID, "본인의 주문만 취소할 수 있습니다.");
         }
 
-        // 3. 주문 취소 (상태 검증 포함)
-        order.cancel();
+        // 3. 결제 취소 등록 -> 취소등록 후 cronJob으로 최종 취소 처리
+        paymentPort.cancelPayment(orderId);
 
-        // 4. 결제 취소 - 실패 시 트랜잭션 롤백
-        boolean paymentCancelSuccess = paymentPort.cancelPayment(orderId);
-        if (!paymentCancelSuccess) {
-            throw new OrderValidationException(
-                    OrderValidationErrorCode.ORDER_STATUS_INVALID,
-                    "결제 취소에 실패했습니다. 주문 취소가 롤백됩니다."
-            );
-        }
-
-        // 5. 저장
+        // 4. 저장
         orderRepository.save(order);
 
         return OrderResponse.from(order);

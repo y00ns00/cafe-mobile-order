@@ -1,6 +1,7 @@
 package ys.cafe.order.port;
 
 import ys.cafe.common.vo.Won;
+import ys.cafe.payment.service.dto.PaymentInfoResponse;
 
 /**
  * Payment 아웃바운드 포트
@@ -22,5 +23,5 @@ public interface PaymentPort {
      * @param orderId 주문 ID
      * @return 결제 취소 성공 여부
      */
-    boolean cancelPayment(Long orderId);
+    PaymentInfoResponse cancelPayment(Long orderId);
 }

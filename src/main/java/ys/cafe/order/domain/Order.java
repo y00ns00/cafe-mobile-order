@@ -1,6 +1,7 @@
 package ys.cafe.order.domain;
 
 import jakarta.persistence.*;
+import ys.cafe.common.util.DateTimeFormatUtil;
 import ys.cafe.common.vo.Won;
 import ys.cafe.order.exception.OrderValidationException;
 import ys.cafe.order.exception.errorcode.OrderValidationErrorCode;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "orders")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,9 +48,9 @@ public class Order {
 
         Order order = new Order();
         order.memberId = memberId;
+        order.orderStatus = OrderStatus.PAYMENT_WAITING;
         order.orderLines = orderLines;
         order.orderDateTime = LocalDateTime.now();
-        order.orderStatus = OrderStatus.PAYMENT_WAITING;
         order.totalPrice = calculateTotalPrice(orderLines.stream().map(OrderLine::getTotalPrice).toList());
         return order;
     }
@@ -90,6 +92,10 @@ public class Order {
         return orderDateTime;
     }
 
+    public String getFormattedOrderDateTime() {
+        return DateTimeFormatUtil.formatDateTime(orderDateTime);
+    }
+
     public Won getTotalPrice() {
         return totalPrice;
     }
@@ -110,7 +116,7 @@ public class Order {
 
     /**
      * 결제 실패 처리
-     * PAYMENT_WAITING → CANCELED
+     * PAYMENT_WAITING → FAILED
      */
     public void failPayment() {
         if (this.orderStatus != OrderStatus.PAYMENT_WAITING) {
@@ -119,7 +125,7 @@ public class Order {
                     "결제 대기 상태가 아닙니다. 현재 상태: " + this.orderStatus
             );
         }
-        this.orderStatus = OrderStatus.CANCELED;
+        this.orderStatus = OrderStatus.PAYMENT_FAILED;
     }
 
     /**
