@@ -33,8 +33,8 @@ public class OrderService {
     @Transactional
     public OrderResponse placeOrder(OrderCreateRequest orderCreateRequest) {
         // 1. 요청된 상품 ID 목록 추출
-        List<Long> requestedProductIds = orderCreateRequest.getOrderLines().stream()
-                .map(OrderLineCreateRequest::getProductId)
+        List<Long> requestedProductIds = orderCreateRequest.orderLines().stream()
+                .map(OrderLineCreateRequest::productId)
                 .toList();
 
         // 2. 사용 가능한 상품 조회 (한 번의 쿼리로 조회)
@@ -53,12 +53,12 @@ public class OrderService {
                 .collect(Collectors.toMap(ProductDTO::productId, product -> product));
 
         // 6. OrderLine 생성 (검증 완료되어 null 체크 불필요)
-        List<OrderLine> orderLines = orderCreateRequest.getOrderLines().stream()
+        List<OrderLine> orderLines = orderCreateRequest.orderLines().stream()
                 .map(request -> createOrderLine(request, productMap))
                 .toList();
 
         // 7. Order 생성 및 저장 (ID 생성을 위해 먼저 저장)
-        Order order = Order.create(orderCreateRequest.getMemberId(), orderLines);
+        Order order = Order.create(orderCreateRequest.memberId(), orderLines);
         Order savedOrder = orderRepository.save(order);
 
         // 8. 결제 처리
@@ -98,11 +98,11 @@ public class OrderService {
      * OrderLine 생성
      */
     private OrderLine createOrderLine(OrderLineCreateRequest request, Map<Long, ProductDTO> productMap) {
-        ProductDTO product = productMap.get(request.getProductId());
+        ProductDTO product = productMap.get(request.productId());
         return OrderLine.create(
                 product.productId(),
                 product.name(),
-                request.getQuantity(),
+                request.quantity(),
                 product.price()
         );
     }

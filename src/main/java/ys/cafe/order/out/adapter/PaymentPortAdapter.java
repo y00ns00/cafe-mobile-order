@@ -23,7 +23,7 @@ public class PaymentPortAdapter implements PaymentPort {
     @Override
     public boolean processPayment(Long orderId, Long memberId, Won amount) {
         PaymentResponse paymentResponse = paymentService.processPayment(orderId, memberId, amount.toPlainString());
-        return paymentResponse.isSuccess();
+        return paymentResponse.success();
     }
 
     @Override

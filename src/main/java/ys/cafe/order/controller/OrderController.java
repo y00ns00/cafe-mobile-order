@@ -84,7 +84,7 @@ public class OrderController {
             @PathVariable @Positive(message = "주문 ID는 1 이상이어야 합니다.") Long orderId,
             @Valid @RequestBody OrderCancelRequest request
     ) {
-        OrderResponse response = orderService.cancelOrder(orderId, request.getMemberId());
+        OrderResponse response = orderService.cancelOrder(orderId, request.memberId());
         return ResponseEntity.ok(response);
     }
 }

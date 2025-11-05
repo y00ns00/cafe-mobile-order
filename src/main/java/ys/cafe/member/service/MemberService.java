@@ -12,8 +12,6 @@ import ys.cafe.member.persistence.MemberRepository;
 import ys.cafe.member.service.dto.request.MemberSignUpRequest;
 import ys.cafe.member.service.dto.response.MemberResponse;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -24,18 +22,18 @@ public class MemberService {
     @Transactional
     public MemberResponse signUp(MemberSignUpRequest request) {
 
-        PhoneNumber phoneNumber = PhoneNumber.of(request.getPhoneNumber());
+        PhoneNumber phoneNumber = PhoneNumber.of(request.phoneNumber());
         if(memberRepository.findOneByPhoneNumber(phoneNumber).isPresent()) {
             throw new CommonException(CommonErrorCode.ALREADY_EXISTS, "이미 존재하는 회원입니다.");
         }
 
         Member member = Member.register(
-                request.getPassword(),
-                request.getLastName(),
-                request.getFirstName(),
-                request.getPhoneNumber(),
-                request.getGender(),
-                request.getBirthDate(),
+                request.password(),
+                request.lastName(),
+                request.firstName(),
+                request.phoneNumber(),
+                request.gender(),
+                request.birthDate(),
                 passwordEncoder::encode
         );
 

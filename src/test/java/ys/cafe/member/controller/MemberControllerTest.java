@@ -54,6 +54,17 @@ public class MemberControllerTest {
 
     }
 
+    private MemberSignUpRequest createRequest(
+            String password,
+            String lastName,
+            String firstName,
+            String phoneNumber,
+            String gender,
+            String birthDate
+    ) {
+        return new MemberSignUpRequest(password, lastName, firstName, phoneNumber, gender, birthDate);
+    }
+
     @Nested
     @DisplayName("회원가입 api 호출 성공 테스트")
     class SignUpRequestSuccessTest {
@@ -62,14 +73,14 @@ public class MemberControllerTest {
         @DisplayName("멤버 생성")
         public void signUpMember() throws Exception {
             // given
-            MemberSignUpRequest request = MemberSignUpRequest.builder()
-                    .password("password123!@")
-                    .lastName("김")
-                    .firstName("철수")
-                    .birthDate("1995-03-25")
-                    .phoneNumber("01012345678")
-                    .gender("MALE")
-                    .build();
+            MemberSignUpRequest request = createRequest(
+                    "password123!@",
+                    "김",
+                    "철수",
+                    "01012345678",
+                    "MALE",
+                    "1995-03-25"
+            );
 
             MemberResponse response = MemberResponse.from(MemberMother.getRegisterMember());
 
@@ -107,14 +118,14 @@ public class MemberControllerTest {
         @DisplayName("유효하지 않은 패스워드 입력시 예외를 발생한다.")
         public void signUpMemberWithInvalidPassword(String password) throws Exception {
             // given
-            MemberSignUpRequest request = MemberSignUpRequest.builder()
-                    .password(password)
-                    .lastName("김")
-                    .firstName("철수")
-                    .birthDate("1995-03-25")
-                    .phoneNumber("01012345678")
-                    .gender("MALE")
-                    .build();
+            MemberSignUpRequest request = createRequest(
+                    password,
+                    "김",
+                    "철수",
+                    "01012345678",
+                    "MALE",
+                    "1995-03-25"
+            );
 
             MemberResponse response = MemberResponse.from(MemberMother.getRegisterMember());
 
@@ -139,14 +150,14 @@ public class MemberControllerTest {
         @DisplayName("비어있거나 Null 패스워드 입력시 예외를 발생한다.")
         public void signUpMemberWithPasswordNullOrBlank(String password) throws Exception {
             // given
-            MemberSignUpRequest request = MemberSignUpRequest.builder()
-                    .password(password)
-                    .lastName("김")
-                    .firstName("철수")
-                    .birthDate("1995-03-25")
-                    .phoneNumber("01012345678")
-                    .gender("MALE")
-                    .build();
+            MemberSignUpRequest request = createRequest(
+                    password,
+                    "김",
+                    "철수",
+                    "01012345678",
+                    "MALE",
+                    "1995-03-25"
+            );
 
             MemberResponse response = MemberResponse.from(MemberMother.getRegisterMember());
 
@@ -172,14 +183,14 @@ public class MemberControllerTest {
         @DisplayName("비어있거나 Null lastName 입력시 예외를 발생한다.")
         public void signUpMemberWithLastNameNullOrBlank(String lastName) throws Exception {
             // given
-            MemberSignUpRequest request = MemberSignUpRequest.builder()
-                    .password("password123!@")
-                    .lastName(lastName)
-                    .firstName("철수")
-                    .birthDate("1995-03-25")
-                    .phoneNumber("01012345678")
-                    .gender("MALE")
-                    .build();
+            MemberSignUpRequest request = createRequest(
+                    "password123!@",
+                    lastName,
+                    "철수",
+                    "01012345678",
+                    "MALE",
+                    "1995-03-25"
+            );
 
             MemberResponse response = MemberResponse.from(MemberMother.getRegisterMember());
 
@@ -204,14 +215,14 @@ public class MemberControllerTest {
         @DisplayName("비어있거나 Null firstName 입력시 예외를 발생한다.")
         public void signUpMemberWithFirstNameNullOrBlank(String firstName) throws Exception {
             // given
-            MemberSignUpRequest request = MemberSignUpRequest.builder()
-                    .password("password123!@")
-                    .lastName("김")
-                    .firstName(firstName)
-                    .birthDate("1995-03-25")
-                    .phoneNumber("01012345678")
-                    .gender("MALE")
-                    .build();
+            MemberSignUpRequest request = createRequest(
+                    "password123!@",
+                    "김",
+                    firstName,
+                    "01012345678",
+                    "MALE",
+                    "1995-03-25"
+            );
             MemberResponse response = MemberResponse.from(MemberMother.getRegisterMember());
 
             Mockito.when(memberService.signUp(Mockito.any(MemberSignUpRequest.class))).thenReturn(response);
@@ -235,14 +246,14 @@ public class MemberControllerTest {
         @DisplayName("비어있거나 Null phone 입력시 예외를 발생한다.")
         public void signUpMemberWithPhoneNullOrBlank(String phone) throws Exception {
             // given
-            MemberSignUpRequest request = MemberSignUpRequest.builder()
-                    .password("password123!@")
-                    .lastName("김")
-                    .firstName("철수")
-                    .birthDate("1995-03-25")
-                    .phoneNumber(phone)
-                    .gender("MALE")
-                    .build();
+            MemberSignUpRequest request = createRequest(
+                    "password123!@",
+                    "김",
+                    "철수",
+                    phone,
+                    "MALE",
+                    "1995-03-25"
+            );
             MemberResponse response = MemberResponse.from(MemberMother.getRegisterMember());
 
             Mockito.when(memberService.signUp(Mockito.any(MemberSignUpRequest.class))).thenReturn(response);
@@ -266,14 +277,14 @@ public class MemberControllerTest {
         @DisplayName("유효하지 않은 phone 입력시 예외를 발생한다.")
         public void signUpMemberWithInvalidPhone(String phone) throws Exception {
             // given
-            MemberSignUpRequest request = MemberSignUpRequest.builder()
-                    .password("password123!@")
-                    .lastName("김")
-                    .firstName("철수")
-                    .birthDate("1995-03-25")
-                    .phoneNumber(phone)
-                    .gender("MALE")
-                    .build();
+            MemberSignUpRequest request = createRequest(
+                    "password123!@",
+                    "김",
+                    "철수",
+                    phone,
+                    "MALE",
+                    "1995-03-25"
+            );
             MemberResponse response = MemberResponse.from(MemberMother.getRegisterMember());
 
             Mockito.when(memberService.signUp(Mockito.any(MemberSignUpRequest.class))).thenReturn(response);
@@ -296,14 +307,14 @@ public class MemberControllerTest {
         @DisplayName("유효하지 않은 Gender 입력시 예외를 발생한다.")
         public void signUpMemberWithInvalidGender(String gender) throws Exception {
             // given
-            MemberSignUpRequest request = MemberSignUpRequest.builder()
-                    .password("password123!@")
-                    .lastName("김")
-                    .firstName("철수")
-                    .birthDate("1995-03-25")
-                    .phoneNumber("01012345678")
-                    .gender(gender)
-                    .build();
+            MemberSignUpRequest request = createRequest(
+                    "password123!@",
+                    "김",
+                    "철수",
+                    "01012345678",
+                    gender,
+                    "1995-03-25"
+            );
             MemberResponse response = MemberResponse.from(MemberMother.getRegisterMember());
 
             Mockito.when(memberService.signUp(Mockito.any(MemberSignUpRequest.class))).thenReturn(response);
@@ -327,14 +338,14 @@ public class MemberControllerTest {
         @DisplayName("유효하지 않은 BirthDate 입력시 예외를 발생한다.")
         public void signUpMemberWithInvalidBirthDate(String birthDate) throws Exception {
             // given
-            MemberSignUpRequest request = MemberSignUpRequest.builder()
-                    .password("password123!@")
-                    .lastName("김")
-                    .firstName("철수")
-                    .birthDate(birthDate)
-                    .phoneNumber("01012345678")
-                    .gender("MALE")
-                    .build();
+            MemberSignUpRequest request = createRequest(
+                    "password123!@",
+                    "김",
+                    "철수",
+                    "01012345678",
+                    "MALE",
+                    birthDate
+            );
             MemberResponse response = MemberResponse.from(MemberMother.getRegisterMember());
 
             Mockito.when(memberService.signUp(Mockito.any(MemberSignUpRequest.class))).thenReturn(response);

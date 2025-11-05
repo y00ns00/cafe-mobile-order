@@ -52,7 +52,7 @@ public class PaymentController {
     public ResponseEntity<PaymentInfoResponse> cancelPayment(
             @RequestBody PaymentCancelRequest request
     ) {
-        PaymentInfoResponse paymentInfoResponse = paymentService.cancelPayment(request.getOrderId());
+        PaymentInfoResponse paymentInfoResponse = paymentService.cancelPayment(request.orderId());
 
         return ResponseEntity.ok(paymentInfoResponse);
     }

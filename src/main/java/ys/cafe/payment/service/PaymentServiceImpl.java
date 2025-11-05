@@ -50,13 +50,13 @@ public class PaymentServiceImpl implements PaymentService {
         );
 
         PaymentResponse response = paymentClient.pay(
-                member.getName(),
-                member.getBirthDate(),
-                member.getPhoneNumber(),
+                member.name(),
+                member.birthDate(),
+                member.phoneNumber(),
                 won
         );
 
-        if(response.isSuccess()) {
+        if(response.success()) {
             payment.markAsSuccess();
         } else {
             payment.markAsFailed();
@@ -155,7 +155,7 @@ public class PaymentServiceImpl implements PaymentService {
             CompletableFuture<PaymentResponse> cancelResponseFuture = paymentClient.cancel(paymentKey);
             PaymentResponse cancelResponse = cancelResponseFuture.get();
 
-            if (cancelResponse.isSuccess()) {
+            if (cancelResponse.success()) {
                 // 취소 완료 상태로 변경
                 payment.markAsCancelCompleted();
                 paymentRepository.save(payment);
@@ -164,7 +164,7 @@ public class PaymentServiceImpl implements PaymentService {
                         paymentKey, payment.getOrderId());
             } else {
                 log.error("외부 결제 시스템 취소 실패 - paymentKey: {}, orderId: {}, reason: {}",
-                        paymentKey, payment.getOrderId(), cancelResponse.getMessage());
+                        paymentKey, payment.getOrderId(), cancelResponse.message());
             }
         } catch (Exception e) {
             log.error("외부 결제 시스템 취소 중 예외 발생 - paymentKey: {}, error: {}",

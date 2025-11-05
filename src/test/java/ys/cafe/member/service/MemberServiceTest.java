@@ -70,14 +70,14 @@ class MemberServiceTest {
 
             // then
             assertThat(response).isNotNull();
-            assertThat(response.getName().getFullName()).isEqualTo("김철수");
-            assertThat(response.getName().getLastName()).isEqualTo("김");
-            assertThat(response.getName().getFirstName()).isEqualTo("철수");
-            assertThat(response.getPhoneNumber().getFormatted()).isEqualTo("010-1234-5678");
-            assertThat(response.getPhoneNumber().getValue()).isEqualTo("01012345678");
-            assertThat(response.getGender()).isEqualTo("MALE");
-            assertThat(response.getBirthDate().getBirthDate()).isEqualTo("1990-01-01");
-            assertThat(response.getRegistrationDateTime()).isNotNull();
+            assertThat(response.name().fullName()).isEqualTo("김철수");
+            assertThat(response.name().lastName()).isEqualTo("김");
+            assertThat(response.name().firstName()).isEqualTo("철수");
+            assertThat(response.phoneNumber().formatted()).isEqualTo("010-1234-5678");
+            assertThat(response.phoneNumber().value()).isEqualTo("01012345678");
+            assertThat(response.gender()).isEqualTo("MALE");
+            assertThat(response.birthDate().birthDate()).isEqualTo("1990-01-01");
+            assertThat(response.registrationDateTime()).isNotNull();
         }
 
         @Test
@@ -111,14 +111,14 @@ class MemberServiceTest {
 
             // then
             assertThat(response).isNotNull();
-            assertThat(response.getName().getFullName()).isEqualTo("김영희");
-            assertThat(response.getName().getLastName()).isEqualTo("김");
-            assertThat(response.getName().getFirstName()).isEqualTo("영희");
-            assertThat(response.getPhoneNumber().getFormatted()).isEqualTo("010-1234-5678");
-            assertThat(response.getPhoneNumber().getValue()).isEqualTo("01012345678");
-            assertThat(response.getGender()).isEqualTo("FEMALE");
-            assertThat(response.getBirthDate().getBirthDate()).isEqualTo("1995-01-01");
-            assertThat(response.getRegistrationDateTime()).isNotNull();
+            assertThat(response.name().fullName()).isEqualTo("김영희");
+            assertThat(response.name().lastName()).isEqualTo("김");
+            assertThat(response.name().firstName()).isEqualTo("영희");
+            assertThat(response.phoneNumber().formatted()).isEqualTo("010-1234-5678");
+            assertThat(response.phoneNumber().value()).isEqualTo("01012345678");
+            assertThat(response.gender()).isEqualTo("FEMALE");
+            assertThat(response.birthDate().birthDate()).isEqualTo("1995-01-01");
+            assertThat(response.registrationDateTime()).isNotNull();
         }
 
         @Test
@@ -142,7 +142,7 @@ class MemberServiceTest {
 
 
             // then
-            assertThat(response.getGender()).isEqualTo("OTHER");
+            assertThat(response.gender()).isEqualTo("OTHER");
         }
 
         @Test
@@ -165,8 +165,8 @@ class MemberServiceTest {
             MemberResponse response = memberService.signUp(request);
 
             // then
-            assertThat(response.getPhoneNumber().getFormatted()).isEqualTo("010-3333-4444");
-            assertThat(response.getPhoneNumber().getValue()).isEqualTo("01033334444");
+            assertThat(response.phoneNumber().formatted()).isEqualTo("010-3333-4444");
+            assertThat(response.phoneNumber().value()).isEqualTo("01033334444");
 
         }
 
@@ -191,7 +191,7 @@ class MemberServiceTest {
             MemberResponse response = memberService.signUp(request);
 
             // then
-            assertThat(response.getBirthDate().getBirthDate()).isEqualTo("2000-02-29");
+            assertThat(response.birthDate().birthDate()).isEqualTo("2000-02-29");
         }
 
     }

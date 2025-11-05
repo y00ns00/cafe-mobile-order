@@ -22,11 +22,11 @@ public class MemberPortAdapter implements MemberPort {
         MemberResponse member = memberService.getMember(memberId);
 
         return MemberDTO.of(
-                member.getName().getFullName(),
-                member.getPhoneNumber().getValue(),
-                member.getGender(),
-                member.getBirthDate().getBirthDate(),
-                member.getRegistrationDateTime()
+                member.name().fullName(),
+                member.phoneNumber().value(),
+                member.gender(),
+                member.birthDate().birthDate(),
+                member.registrationDateTime()
         );
     }
 }

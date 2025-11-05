@@ -85,7 +85,7 @@ class PaymentServiceImplTest {
         PaymentResponse response = paymentService.processPayment(orderId, memberId, amount);
 
         // then
-        assertThat(response.isSuccess()).isTrue();
+        assertThat(response.success()).isTrue();
 
         verify(memberPort).getMember(memberId);
         verify(paymentClient).pay(anyString(), anyString(), anyString(), anyString());
@@ -105,8 +105,8 @@ class PaymentServiceImplTest {
         PaymentResponse response = paymentService.processPayment(orderId, memberId, amount);
 
         // then
-        assertThat(response.isSuccess()).isFalse();
-        assertThat(response.getMessage()).isEqualTo("결제 실패");
+        assertThat(response.success()).isFalse();
+        assertThat(response.message()).isEqualTo("결제 실패");
 
         verify(paymentRepository).save(any(Payment.class));
     }
@@ -124,9 +124,9 @@ class PaymentServiceImplTest {
 
         // then
         assertThat(paymentInfo).isNotNull();
-        assertThat(paymentInfo.getOrderId()).isEqualTo(orderId);
-        assertThat(paymentInfo.getMemberId()).isEqualTo(memberId);
-        assertThat(paymentInfo.getAmount()).isEqualTo("5000");
+        assertThat(paymentInfo.orderId()).isEqualTo(orderId);
+        assertThat(paymentInfo.memberId()).isEqualTo(memberId);
+        assertThat(paymentInfo.amount()).isEqualTo("5000");
 
         verify(paymentRepository).findByPaymentKey(PaymentKey.of(paymentKey));
     }
@@ -159,8 +159,8 @@ class PaymentServiceImplTest {
 
         // then
         assertThat(result).isNotNull();
-        assertThat(result.getOrderId()).isEqualTo(orderId);
-        assertThat(result.getStatus()).isEqualTo("CANCELED");
+        assertThat(result.orderId()).isEqualTo(orderId);
+        assertThat(result.status()).isEqualTo("CANCELED");
         assertThat(payment.getStatus()).isEqualTo(PaymentStatus.CANCELED);
 
         verify(paymentRepository).findByOrderId(orderId);
@@ -275,14 +275,14 @@ class PaymentServiceImplTest {
         PaymentListResponse result = paymentService.getUserPayments(memberId);
 
         // then
-        assertThat(result.getPayments()).hasSize(3);
-        assertThat(result.getTotalCount()).isEqualTo(3);
-        assertThat(result.getPayments().get(0).getOrderId()).isEqualTo(1L);
-        assertThat(result.getPayments().get(0).getMemberId()).isEqualTo(memberId);
-        assertThat(result.getPayments().get(0).getAmount()).isEqualTo("5000");
-        assertThat(result.getPayments().get(0).getStatus()).isEqualTo("SUCCESS");
-        assertThat(result.getPayments().get(1).getAmount()).isEqualTo("10000");
-        assertThat(result.getPayments().get(2).getStatus()).isEqualTo("CANCELED");
+        assertThat(result.payments()).hasSize(3);
+        assertThat(result.totalCount()).isEqualTo(3);
+        assertThat(result.payments().get(0).orderId()).isEqualTo(1L);
+        assertThat(result.payments().get(0).memberId()).isEqualTo(memberId);
+        assertThat(result.payments().get(0).amount()).isEqualTo("5000");
+        assertThat(result.payments().get(0).status()).isEqualTo("SUCCESS");
+        assertThat(result.payments().get(1).amount()).isEqualTo("10000");
+        assertThat(result.payments().get(2).status()).isEqualTo("CANCELED");
 
         verify(paymentRepository).findByMemberId(memberId);
     }
@@ -297,8 +297,8 @@ class PaymentServiceImplTest {
         PaymentListResponse result = paymentService.getUserPayments(memberId);
 
         // then
-        assertThat(result.getPayments()).isEmpty();
-        assertThat(result.getTotalCount()).isEqualTo(0);
+        assertThat(result.payments()).isEmpty();
+        assertThat(result.totalCount()).isEqualTo(0);
 
         verify(paymentRepository).findByMemberId(memberId);
     }

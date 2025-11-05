@@ -1,6 +1,5 @@
 package ys.cafe.order.service;
 
-import jakarta.validation.Valid;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,13 +54,13 @@ class OrderServiceTest {
         List<ProductDTO> availableProducts = ProductDTOMother.availableProducts();
         Map<Long, ProductDTO> productById = availableProducts.stream().collect(Collectors.toMap(ProductDTO::productId, Function.identity()));
 
-        List<OrderLine> orderLines = orderCreateRequest.getOrderLines().stream()
+        List<OrderLine> orderLines = orderCreateRequest.orderLines().stream()
                 .map(request -> {
                     return OrderLineMother.orderLine(
-                            request.getProductId(),
-                            productById.get(request.getProductId()).name(),
-                            request.getQuantity(),
-                            productById.get(request.getProductId()).price()
+                            request.productId(),
+                            productById.get(request.productId()).name(),
+                            request.quantity(),
+                            productById.get(request.productId()).price()
                     );
                 }).toList();
 
@@ -74,9 +73,9 @@ class OrderServiceTest {
         OrderResponse response = orderService.placeOrder(orderCreateRequest);
 
         // then
-        assertThat(response.getOrderStatus()).isEqualTo(OrderStatus.PREPARING);
-        assertThat(response.getTotalPrice()).isEqualTo("14000");
-        assertThat(response.getOrderLines()).hasSize(2);
+        assertThat(response.orderStatus()).isEqualTo(OrderStatus.PREPARING);
+        assertThat(response.totalPrice()).isEqualTo("14000");
+        assertThat(response.orderLines()).hasSize(2);
 
         verify(paymentPort).processPayment(eq(10L), eq(memberId), eq(Won.of("14000")));
         verify(productPort).findAvailableProductsByIds(List.of(1L, 2L));
@@ -132,7 +131,7 @@ class OrderServiceTest {
         OrderResponse response = orderService.placeOrder(orderCreateRequest);
 
         // then
-        assertThat(response.getOrderStatus()).isEqualTo(OrderStatus.PAYMENT_FAILED);
+        assertThat(response.orderStatus()).isEqualTo(OrderStatus.PAYMENT_FAILED);
         verify(paymentPort).processPayment(eq(orderId), eq(memberId), any(Won.class));
     }
 
@@ -149,8 +148,8 @@ class OrderServiceTest {
         OrderResponse response = orderService.getOrder(orderId);
 
         // then
-        assertThat(response.getOrderId()).isEqualTo(orderId);
-        assertThat(response.getMemberId()).isEqualTo(memberId);
+        assertThat(response.orderId()).isEqualTo(orderId);
+        assertThat(response.memberId()).isEqualTo(memberId);
         verify(orderRepository).findById(orderId);
     }
 
@@ -182,8 +181,8 @@ class OrderServiceTest {
         OrderListResponse response = orderService.getAllOrders();
 
         // then
-        assertThat(response.getOrders()).hasSize(2);
-        assertThat(response.getTotalCount()).isEqualTo(2);
+        assertThat(response.orders()).hasSize(2);
+        assertThat(response.totalCount()).isEqualTo(2);
         verify(orderRepository).findAll();
     }
 
@@ -200,8 +199,8 @@ class OrderServiceTest {
         OrderListResponse response = orderService.getMemberOrders(memberId);
 
         // then
-        assertThat(response.getOrders()).hasSize(2);
-        assertThat(response.getTotalCount()).isEqualTo(2);
+        assertThat(response.orders()).hasSize(2);
+        assertThat(response.totalCount()).isEqualTo(2);
         verify(orderRepository).findByMemberId(memberId);
     }
 
@@ -218,7 +217,7 @@ class OrderServiceTest {
         OrderResponse response = orderService.cancelOrder(orderId, memberId);
 
         // then
-        assertThat(response.getOrderId()).isEqualTo(orderId);
+        assertThat(response.orderId()).isEqualTo(orderId);
         verify(paymentPort).cancelPayment(orderId);
         verify(orderRepository).save(order);
     }
