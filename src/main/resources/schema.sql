@@ -1,3 +1,7 @@
+create schema `cafe-order`;
+
+use `cafe-order`;
+
 -- member 테이블
 CREATE TABLE member
 (
