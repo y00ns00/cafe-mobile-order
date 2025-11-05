@@ -4,9 +4,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import ys.cafe.order.domain.Order;
 import ys.cafe.order.domain.OrderLine;
 import ys.cafe.order.domain.OrderStatus;
@@ -175,15 +178,27 @@ class OrderServiceTest {
         Long memberId = 1L;
         Order order1 = OrderMother.orderWithId(100L, memberId);
         Order order2 = OrderMother.orderWithId(101L, memberId);
-        when(orderRepository.findAll()).thenReturn(List.of(order1, order2));
+        when(orderRepository.findAll(any(Pageable.class)))
+                .thenAnswer(invocation -> {
+                    Pageable pageable = invocation.getArgument(0, Pageable.class);
+                    return new PageImpl<>(List.of(order1, order2), pageable, 2);
+                });
 
         // when
-        OrderListResponse response = orderService.getAllOrders();
+        OrderListResponse response = orderService.getAllOrders(0, 20);
 
         // then
         assertThat(response.orders()).hasSize(2);
-        assertThat(response.totalCount()).isEqualTo(2);
-        verify(orderRepository).findAll();
+        assertThat(response.totalElements()).isEqualTo(2);
+        assertThat(response.page()).isEqualTo(0);
+        assertThat(response.size()).isEqualTo(20);
+        assertThat(response.totalPages()).isEqualTo(1);
+        assertThat(response.hasNext()).isFalse();
+        ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+        verify(orderRepository).findAll(pageableCaptor.capture());
+        Pageable captured = pageableCaptor.getValue();
+        assertThat(captured.getPageNumber()).isEqualTo(0);
+        assertThat(captured.getPageSize()).isEqualTo(20);
     }
 
     @Test
@@ -200,7 +215,11 @@ class OrderServiceTest {
 
         // then
         assertThat(response.orders()).hasSize(2);
-        assertThat(response.totalCount()).isEqualTo(2);
+        assertThat(response.totalElements()).isEqualTo(2);
+        assertThat(response.size()).isEqualTo(2);
+        assertThat(response.page()).isEqualTo(0);
+        assertThat(response.totalPages()).isEqualTo(1);
+        assertThat(response.hasNext()).isFalse();
         verify(orderRepository).findByMemberId(memberId);
     }
 

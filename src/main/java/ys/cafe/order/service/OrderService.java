@@ -1,6 +1,9 @@
 package ys.cafe.order.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ys.cafe.order.out.port.PaymentPort;
@@ -116,12 +119,22 @@ public class OrderService {
         return OrderResponse.from(order);
     }
 
-    public OrderListResponse getAllOrders() {
-        List<Order> orders = orderRepository.findAll();
-        List<OrderResponse> orderResponses = orders.stream()
+    public OrderListResponse getAllOrders(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Order> orderPage = orderRepository.findAll(pageable);
+
+        List<OrderResponse> orderResponses = orderPage.getContent().stream()
                 .map(OrderResponse::from)
                 .toList();
-        return OrderListResponse.of(orderResponses);
+
+        return OrderListResponse.of(
+                orderResponses,
+                orderPage.getTotalElements(),
+                orderPage.getNumber(),
+                orderPage.getSize(),
+                orderPage.getTotalPages(),
+                orderPage.hasNext()
+        );
     }
 
     /**
@@ -133,7 +146,7 @@ public class OrderService {
         List<OrderResponse> orderResponses = orders.stream()
                 .map(OrderResponse::from)
                 .toList();
-        return OrderListResponse.of(orderResponses);
+        return OrderListResponse.unpaged(orderResponses);
     }
 
     /**

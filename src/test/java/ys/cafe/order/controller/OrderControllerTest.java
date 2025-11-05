@@ -97,19 +97,25 @@ class OrderControllerTest {
                 OrderResponse.from(OrderMother.orderWithId(1L, 1L)),
                 OrderResponse.from(OrderMother.orderWithId(2L, 1L))
         );
-        OrderListResponse response = OrderListResponse.of(orders);
+        OrderListResponse response = OrderListResponse.of(orders, 2, 0, 20, 1, false);
 
-        given(orderService.getAllOrders()).willReturn(response);
+        given(orderService.getAllOrders(0, 20)).willReturn(response);
 
         // when & then
         mockMvc.perform(get("/orders")
+                        .param("page", "0")
+                        .param("size", "20")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.orders").isArray())
                 .andExpect(jsonPath("$.orders[0].orderId").value(1))
-                .andExpect(jsonPath("$.totalCount").value(2));
+                .andExpect(jsonPath("$.totalElements").value(2))
+                .andExpect(jsonPath("$.page").value(0))
+                .andExpect(jsonPath("$.size").value(20))
+                .andExpect(jsonPath("$.totalPages").value(1))
+                .andExpect(jsonPath("$.hasNext").value(false));
 
-        verify(orderService).getAllOrders();
+        verify(orderService).getAllOrders(0, 20);
     }
 
     @Test
@@ -121,7 +127,7 @@ class OrderControllerTest {
                 OrderResponse.from(OrderMother.orderWithId(100L, memberId)),
                 OrderResponse.from(OrderMother.orderWithId(101L, memberId))
         );
-        OrderListResponse response = OrderListResponse.of(orders);
+        OrderListResponse response = OrderListResponse.unpaged(orders);
 
         given(orderService.getMemberOrders(memberId)).willReturn(response);
 
@@ -131,7 +137,9 @@ class OrderControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.orders").isArray())
                 .andExpect(jsonPath("$.orders[0].orderId").value(100))
-                .andExpect(jsonPath("$.totalCount").value(2));
+                .andExpect(jsonPath("$.totalElements").value(2))
+                .andExpect(jsonPath("$.size").value(2))
+                .andExpect(jsonPath("$.hasNext").value(false));
 
         verify(orderService).getMemberOrders(memberId);
     }

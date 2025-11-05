@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -56,8 +57,11 @@ public class OrderController {
             description = "시스템의 모든 주문 목록을 조회합니다."
     )
     @GetMapping
-    public ResponseEntity<OrderListResponse> getAllOrders() {
-        OrderListResponse response = orderService.getAllOrders();
+    public ResponseEntity<OrderListResponse> getAllOrders(
+            @RequestParam(defaultValue = "0") @PositiveOrZero(message = "페이지는 0 이상이어야 합니다.") int page,
+            @RequestParam(defaultValue = "20") @Positive(message = "페이지 크기는 1 이상이어야 합니다.") int size
+    ) {
+        OrderListResponse response = orderService.getAllOrders(page, size);
         return ResponseEntity.ok(response);
     }
 

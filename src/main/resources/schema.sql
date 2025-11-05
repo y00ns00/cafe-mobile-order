@@ -1,3 +1,21 @@
+
+-- member 테이블
+CREATE TABLE member (
+                        member_id BIGINT NOT NULL AUTO_INCREMENT COMMENT '멤버 ID',
+                        password VARCHAR(255) NOT NULL COMMENT '비밀번호',
+                        last_name VARCHAR(50) NOT NULL COMMENT '성',
+                        first_name VARCHAR(50) NOT NULL COMMENT '이름',
+                        phone_number VARCHAR(11) NOT NULL COMMENT '휴대폰 번호',
+                        gender VARCHAR(20) NOT NULL COMMENT '성별',
+                        birth_date DATE NOT NULL COMMENT '생년월일 (yyyy-MM-dd)',
+                        registration_date_time DATETIME NOT NULL COMMENT '가입일자',
+                        status VARCHAR(20) NOT NULL COMMENT '회원 상태 (ACTIVE, WITHDRAW_REQUESTED, DELETED)',
+                        withdraw_request_at DATETIME COMMENT '회원 탈퇴 요청 일자 (yyyy-MM-dd HH:mm:ss',
+                        PRIMARY KEY (member_id),
+                        UNIQUE KEY uk_phone_number (phone_number)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '회원 정보';
+
+
 -- Product 테이블
 CREATE TABLE product
 (
@@ -56,7 +74,6 @@ CREATE TABLE order_line
 
 -- Payment 테이블 DDL
 
--- MySQL/MariaDB
 CREATE TABLE payment
 (
     payment_key    VARCHAR(100)   NOT NULL COMMENT '결제 키 (Primary Key)',
