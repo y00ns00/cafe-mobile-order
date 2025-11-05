@@ -74,6 +74,27 @@ public class Payment {
         this.updatedAt = LocalDateTime.now();
     }
 
+    // 상태 확인 메서드
+    public boolean isPending() {
+        return this.status == PaymentStatus.PENDING;
+    }
+
+    public boolean isSuccess() {
+        return this.status == PaymentStatus.SUCCESS;
+    }
+
+    public boolean isFailed() {
+        return this.status == PaymentStatus.FAILED;
+    }
+
+    public boolean isCanceled() {
+        return this.status == PaymentStatus.CANCELED;
+    }
+
+    public boolean isCancelCompleted() {
+        return this.status == PaymentStatus.CANCEL_COMPLETED;
+    }
+
     // Getters
     public String getPaymentKey() {
         return paymentKey.getValue();

@@ -9,9 +9,13 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ys.cafe.common.exception.CommonException;
+import ys.cafe.common.exception.MoneyValidationException;
 import ys.cafe.member.exception.ErrorResponse;
 import ys.cafe.member.exception.MemberValidationException;
 import ys.cafe.member.exception.MemberDomainException;
+import ys.cafe.order.exception.OrderValidationException;
+import ys.cafe.product.exception.ProductValidationException;
+import ys.cafe.product.exception.ProductDomainException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -186,6 +190,94 @@ public class MemberGlobalExceptionHandler {
             HttpServletRequest request
     ) {
         log.error("[Common] {} (code: {})", ex.getMessage(), ex.getErrorCode().getCode());
+
+        HttpStatus httpStatus = httpStatusMapper.resolve(ex.getErrorCode());
+
+        ErrorResponse errorResponse = ErrorResponse.of(
+                httpStatus.value(),
+                ex.getErrorCode().getCode(),
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(httpStatus).body(errorResponse);
+    }
+
+    /**
+     * Order Validation 예외 (주문 입력값 검증 실패)
+     */
+    @ExceptionHandler(OrderValidationException.class)
+    public ResponseEntity<ErrorResponse> handleOrderValidationException(
+            OrderValidationException ex,
+            HttpServletRequest request
+    ) {
+        log.warn("[Order Validation] {} (code: {})", ex.getMessage(), ex.getErrorCode().getCode());
+
+        HttpStatus httpStatus = httpStatusMapper.resolve(ex.getErrorCode());
+
+        ErrorResponse errorResponse = ErrorResponse.of(
+                httpStatus.value(),
+                ex.getErrorCode().getCode(),
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(httpStatus).body(errorResponse);
+    }
+
+    /**
+     * Product Validation 예외 (상품 입력값 검증 실패)
+     */
+    @ExceptionHandler(ProductValidationException.class)
+    public ResponseEntity<ErrorResponse> handleProductValidationException(
+            ProductValidationException ex,
+            HttpServletRequest request
+    ) {
+        log.warn("[Product Validation] {} (code: {})", ex.getMessage(), ex.getErrorCode().getCode());
+
+        HttpStatus httpStatus = httpStatusMapper.resolve(ex.getErrorCode());
+
+        ErrorResponse errorResponse = ErrorResponse.of(
+                httpStatus.value(),
+                ex.getErrorCode().getCode(),
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(httpStatus).body(errorResponse);
+    }
+
+    /**
+     * Product Domain 예외 (상품 비즈니스 규칙 위반)
+     */
+    @ExceptionHandler(ProductDomainException.class)
+    public ResponseEntity<ErrorResponse> handleProductDomainException(
+            ProductDomainException ex,
+            HttpServletRequest request
+    ) {
+        log.error("[Product Domain] {} (code: {})", ex.getMessage(), ex.getErrorCode().getCode());
+
+        HttpStatus httpStatus = httpStatusMapper.resolve(ex.getErrorCode());
+
+        ErrorResponse errorResponse = ErrorResponse.of(
+                httpStatus.value(),
+                ex.getErrorCode().getCode(),
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(httpStatus).body(errorResponse);
+    }
+
+    /**
+     * Money Validation 예외 (금액 입력값 검증 실패)
+     */
+    @ExceptionHandler(MoneyValidationException.class)
+    public ResponseEntity<ErrorResponse> handleMoneyValidationException(
+            MoneyValidationException ex,
+            HttpServletRequest request
+    ) {
+        log.warn("[Money Validation] {} (code: {})", ex.getMessage(), ex.getErrorCode().getCode());
 
         HttpStatus httpStatus = httpStatusMapper.resolve(ex.getErrorCode());
 

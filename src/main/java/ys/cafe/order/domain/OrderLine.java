@@ -7,10 +7,12 @@ import ys.cafe.order.exception.OrderValidationException;
 import ys.cafe.order.exception.errorcode.OrderValidationErrorCode;
 
 @Entity
+@Table(name = "order_line")
 public class OrderLine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "order_line_id")
     private Long orderLineId;
 
     @Column(name = "product_id")

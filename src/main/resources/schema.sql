@@ -1,18 +1,18 @@
-
 -- member 테이블
-CREATE TABLE member (
-                        member_id BIGINT NOT NULL AUTO_INCREMENT COMMENT '멤버 ID',
-                        password VARCHAR(255) NOT NULL COMMENT '비밀번호',
-                        last_name VARCHAR(50) NOT NULL COMMENT '성',
-                        first_name VARCHAR(50) NOT NULL COMMENT '이름',
-                        phone_number VARCHAR(11) NOT NULL COMMENT '휴대폰 번호',
-                        gender VARCHAR(20) NOT NULL COMMENT '성별',
-                        birth_date DATE NOT NULL COMMENT '생년월일 (yyyy-MM-dd)',
-                        registration_date_time DATETIME NOT NULL COMMENT '가입일자',
-                        status VARCHAR(20) NOT NULL COMMENT '회원 상태 (ACTIVE, WITHDRAW_REQUESTED, DELETED)',
-                        withdraw_request_at DATETIME COMMENT '회원 탈퇴 요청 일자 (yyyy-MM-dd HH:mm:ss',
-                        PRIMARY KEY (member_id),
-                        UNIQUE KEY uk_phone_number (phone_number)
+CREATE TABLE member
+(
+    member_id              BIGINT       NOT NULL AUTO_INCREMENT COMMENT '멤버 ID',
+    password               VARCHAR(255) NOT NULL COMMENT '비밀번호',
+    last_name              VARCHAR(50)  NOT NULL COMMENT '성',
+    first_name             VARCHAR(50)  NOT NULL COMMENT '이름',
+    phone_number           VARCHAR(11)  NOT NULL COMMENT '휴대폰 번호',
+    gender                 VARCHAR(20)  NOT NULL COMMENT '성별',
+    birth_date             DATE         NOT NULL COMMENT '생년월일 (yyyy-MM-dd)',
+    registration_date_time DATETIME     NOT NULL COMMENT '가입일자',
+    status                 VARCHAR(20)  NOT NULL COMMENT '회원 상태 (ACTIVE, WITHDRAW_REQUESTED, DELETED)',
+    withdraw_request_at    DATETIME COMMENT '회원 탈퇴 요청 일자 (yyyy-MM-dd HH:mm:ss)',
+    PRIMARY KEY (member_id),
+    UNIQUE KEY uk_phone_number (phone_number)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT '회원 정보';
 
 
@@ -41,11 +41,11 @@ CREATE TABLE product_images
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='상품 이미지';
 
 -- Order 테이블
-CREATE TABLE `order`
+CREATE TABLE `orders`
 (
     order_id        BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '주문 ID',
     member_id       BIGINT         NOT NULL COMMENT '회원 ID',
-    order_status    VARCHAR(50)    NOT NULL COMMENT '주문 상태 (PAYMENT_WAITING, PREPARING, COMPLETED, CANCELED)',
+    order_status    VARCHAR(50)    NOT NULL COMMENT '주문 상태 (PAYMENT_WAITING, PREPARING, PAYMENT_FAILED, SERVE, COMPLETED, CANCELED)',
     order_date_time DATETIME       NOT NULL COMMENT '주문 일시',
     total_price     DECIMAL(19, 0) NOT NULL COMMENT '총 가격',
     currency        VARCHAR(10) COMMENT '통화 (KRW)',
@@ -60,13 +60,13 @@ CREATE TABLE `order`
 CREATE TABLE order_line
 (
     order_line_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '주문 항목 ID',
-    order_id      BIGINT         NOT NULL COMMENT '주문 ID',
+    order_id      BIGINT COMMENT '주문 ID',
     product_id    BIGINT         NOT NULL COMMENT '상품 ID',
     product_name  VARCHAR(100)   NOT NULL COMMENT '상품명',
     quantity      INT            NOT NULL COMMENT '수량',
     price         DECIMAL(19, 0) NOT NULL COMMENT '단가',
     currency      VARCHAR(10) COMMENT '통화 (KRW)',
-    FOREIGN KEY (order_id) REFERENCES `order` (order_id) ON DELETE CASCADE,
+    FOREIGN KEY (order_id) REFERENCES `orders` (order_id) ON DELETE CASCADE,
     INDEX         idx_order_id (order_id),
     INDEX         idx_product_id (product_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='주문 항목';

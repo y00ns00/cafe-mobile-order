@@ -186,6 +186,7 @@ public class OrderService {
 
         // 3. 결제 취소 등록 -> 취소등록 후 cronJob으로 최종 취소 처리
         paymentPort.cancelPayment(orderId);
+        order.cancel();
 
         // 4. 저장
         orderRepository.save(order);

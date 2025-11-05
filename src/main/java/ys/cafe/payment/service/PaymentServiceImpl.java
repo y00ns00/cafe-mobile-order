@@ -8,7 +8,6 @@ import ys.cafe.common.exception.CommonErrorCode;
 import ys.cafe.common.exception.CommonException;
 import ys.cafe.payment.domain.vo.Won;
 import ys.cafe.payment.out.adapter.PaymentClient;
-import ys.cafe.payment.domain.PaymentStatus;
 import ys.cafe.payment.domain.vo.PaymentKey;
 import ys.cafe.payment.out.port.MemberPort;
 import ys.cafe.payment.domain.Payment;
@@ -114,6 +113,26 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = paymentRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new CommonException(CommonErrorCode.NOT_FOUND, "결제 정보를 찾을 수 없습니다. orderId: " + orderId));
 
+        // 이미 취소 신청된 경우
+        if (payment.isCanceled()) {
+            throw new CommonException(CommonErrorCode.ALREADY_EXISTS, "이미 취소 신청된 결제입니다. orderId: " + orderId);
+        }
+
+        // 이미 취소 완료된 경우
+        if (payment.isCancelCompleted()) {
+            throw new CommonException(CommonErrorCode.ALREADY_EXISTS, "이미 취소 완료된 결제입니다. orderId: " + orderId);
+        }
+
+        // 결제 실패한 경우 취소 불가
+        if (payment.isFailed()) {
+            throw new CommonException(CommonErrorCode.BAD_REQUEST, "결제 실패한 건은 취소할 수 없습니다. orderId: " + orderId);
+        }
+
+        // PENDING 상태인 경우 취소 불가
+        if (payment.isPending()) {
+            throw new CommonException(CommonErrorCode.BAD_REQUEST, "결제 대기 중인 건은 취소할 수 없습니다. orderId: " + orderId);
+        }
+
         payment.markAsCanceled();
         paymentRepository.save(payment);
 
@@ -142,7 +161,7 @@ public class PaymentServiceImpl implements PaymentService {
                     .orElseThrow(() -> new CommonException(CommonErrorCode.NOT_FOUND, "결제 정보를 찾을 수 없습니다. paymentKey: " + paymentKey));
 
             // CANCELED 상태가 아니면 처리하지 않음
-            if (payment.getStatus() != PaymentStatus.CANCELED) {
+            if (!payment.isCanceled()) {
                 log.warn("CANCELED 상태가 아닌 결제 - paymentKey: {}, currentStatus: {}",
                         paymentKey, payment.getStatus());
                 return;

@@ -18,6 +18,5 @@ public interface PaymentService {
 
     PaymentInfoResponse cancelPayment(Long orderId);
 
-    @Async("asyncExecutor")
     void processSingleCanceledPaymentAsync(String paymentKey);
 }
