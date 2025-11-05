@@ -1,11 +1,6 @@
 # Cafe Mobile Order API Documentation
 
-## 목차
-- [주문 API](#주문-api)
-- [회원 API](#회원-api)
-- [결제 API](#결제-api)
-- [상품 API](#상품-api)
-
+swagger : http://localhost:8080/swagger-ui.html
 ---
 
 ## 주문 API
