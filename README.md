@@ -313,6 +313,8 @@ public void processSingleCanceledPaymentAsync(String paymentKey) {
 
 ## 데이터베이스 스키마
 
+![cafe-order-erd.png](cafe-order-erd.png)
+
 ### Member (회원)
 ```sql
 member_id           BIGINT PK AUTO_INCREMENT  -- 회원 ID
